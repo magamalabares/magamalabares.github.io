@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 220" width="620" height="220" role="img" aria-label="Magamalabares · utilitários pessoais">
+  <rect width="620" height="220" fill="#f6dfe3"/>
+  <rect x="60.5" y="30.5" width="499" height="159" fill="none" stroke="#9b5a6c"/>
+  <rect x="69.5" y="39.5" width="481" height="141" fill="none" stroke="#9b5a6c"/>
+  <path d="M78.5 94.5V78.5H94.5" fill="none" stroke="#9b5a6c"/>
+  <path d="M541.5 125.5V141.5H525.5" fill="none" stroke="#9b5a6c"/>
+  <text x="310" y="80" text-anchor="middle" font-family="Italiana, Didot, 'Bodoni 72', Georgia, serif" font-size="12" letter-spacing="7" fill="#9b5a6c">PARFUM</text>
+  <text x="310" y="128" text-anchor="middle" font-family="Italiana, Didot, 'Bodoni 72', Georgia, serif" font-size="50" letter-spacing="2" fill="#4a1426">Magamalabares</text>
+  <text x="310" y="156" text-anchor="middle" font-family="'Cormorant Garamond', Garamond, Georgia, serif" font-style="italic" font-size="16" fill="#9b5a6c">utilitários pessoais</text>
+</svg>

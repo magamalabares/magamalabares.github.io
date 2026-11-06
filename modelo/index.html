@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Copie esta pasta para uma nova (nome curto, minúsculas), troque o número e o título. -->
+<title>Nº 2 · Nome da utilidade — Magamalabares</title>
+<script>try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}</script>
+<link rel="stylesheet" href="../assets/magamalabares.css">
+</head>
+<body>
+<div class="mg-pagina" style="max-width:720px">
+  <header class="mg-topo">
+    <a class="mg-marca" href="../">Magamalabares</a>
+    <div class="mg-tema" role="group" aria-label="Tema">
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
+      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+    </div>
+  </header>
+
+  <main class="mg-rotulo">
+    <div>
+      <p class="mg-numero">Nº 2 · Magamalabares</p>
+      <h1>Nome da utilidade</h1>
+      <p class="mg-sub">uma linha explicando o que faz · regras de mês/ano</p>
+    </div>
+
+    <label class="mg-campo">Rótulo do campo
+      <input inputmode="decimal" placeholder="Ex: 10,00">
+    </label>
+
+    <div class="mg-resultado">
+      <div class="mg-linha"><span>Linha do resultado</span><span>R$ 0,00</span></div>
+      <div class="mg-linha mg-linha-total"><span>Total</span><span>R$ 0,00</span></div>
+      <div class="mg-linha"><span><b>Resultado</b></span><span class="mg-valor">R$ 0,00</span></div>
+    </div>
+
+    <aside class="mg-nota">Limitações e o que não está incluído.</aside>
+    <p class="mg-letra-miuda">Regras e fonte em texto pequeno no fim.</p>
+  </main>
+</div>
+<script src="../assets/magamalabares.js"></script>
+</body>
+</html>

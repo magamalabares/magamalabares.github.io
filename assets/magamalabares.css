@@ -1,0 +1,203 @@
+/* Magamalabares · cores, fontes e componentes
+   Manual de marca: noite (bordô) é o padrão; dia (rosinha) segue o sistema
+   ou o botão noite/dia (data-tema no <html>). */
+
+/* Fontes: Google Fonts com fallback do sistema (funciona sem internet). */
+@import url("https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Jost:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap");
+
+:root {
+  --mg-fonte-marca: "Italiana", "Didot", "Bodoni 72", "Bodoni MT", Georgia, serif;
+  --mg-fonte-serifa: "Cormorant Garamond", "EB Garamond", Garamond, Georgia, serif;
+  --mg-fonte-texto: "Jost", "Futura", "Century Gothic", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mg-fonte-mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  /* noite · bordô */
+  --mg-fundo: #2e0c18;
+  --mg-superficie: #4a1426;
+  --mg-linha: #e6b7a3;
+  --mg-texto: #fbe9e2;
+  --mg-suave: #e0b3a6;
+  --mg-destaque: #f2c4b4;
+  --mg-borda: #8a4a52;
+  --mg-campo: #2e0c18;
+  --mg-nota: #3b1020;
+  --mg-botao-texto: #2e0c18;
+  --mg-positivo: #a6dcb0;
+  --mg-negativo: #ff9e9e;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="noite"]) {
+    --mg-fundo: #fbeef0;
+    --mg-superficie: #fff9f6;
+    --mg-linha: #9b5a6c;
+    --mg-texto: #4a1426;
+    --mg-suave: #8a4a5c;
+    --mg-destaque: #a8274e;
+    --mg-borda: #d9b3bd;
+    --mg-campo: #fffdfb;
+    --mg-nota: #f6dfe3;
+    --mg-botao-texto: #fbeef0;
+    --mg-positivo: #2b7448;
+    --mg-negativo: #b3261e;
+    color-scheme: light;
+  }
+}
+
+:root[data-tema="dia"] {
+  --mg-fundo: #fbeef0;
+  --mg-superficie: #fff9f6;
+  --mg-linha: #9b5a6c;
+  --mg-texto: #4a1426;
+  --mg-suave: #8a4a5c;
+  --mg-destaque: #a8274e;
+  --mg-borda: #d9b3bd;
+  --mg-campo: #fffdfb;
+  --mg-nota: #f6dfe3;
+  --mg-botao-texto: #fbeef0;
+  --mg-positivo: #2b7448;
+  --mg-negativo: #b3261e;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--mg-fundo);
+  color: var(--mg-texto);
+  font-family: var(--mg-fonte-texto);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--mg-destaque); }
+a:hover { color: var(--mg-texto); }
+
+.mg-pagina { max-width: 1080px; margin: 0 auto; padding: 20px 16px 64px; }
+
+/* Topo: logotipo + botão noite/dia */
+.mg-topo {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding-bottom: 16px; margin-bottom: 28px; border-bottom: 1px solid var(--mg-borda);
+}
+.mg-marca {
+  font-family: var(--mg-fonte-marca); font-size: 20px; letter-spacing: .06em;
+  color: var(--mg-texto); text-decoration: none;
+}
+.mg-tema { display: flex; border: 1px solid var(--mg-linha); }
+.mg-tema button {
+  font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em;
+  padding: 5px 10px; border: 0; border-radius: 0; background: transparent;
+  color: var(--mg-suave); cursor: pointer;
+}
+.mg-tema button[aria-pressed="true"] { background: var(--mg-linha); color: var(--mg-botao-texto); }
+
+/* Rótulo com moldura dupla */
+.mg-rotulo {
+  background: var(--mg-superficie);
+  border: 1px solid var(--mg-linha);
+  outline: 1px solid var(--mg-linha);
+  outline-offset: -8px;
+  padding: 28px 22px;
+  display: flex; flex-direction: column; gap: 22px;
+}
+@media (min-width: 640px) { .mg-rotulo { padding: 40px; outline-offset: -10px; } }
+
+.mg-numero {
+  margin: 0; font-family: var(--mg-fonte-marca); font-size: 12px;
+  letter-spacing: .5em; color: var(--mg-suave); text-transform: uppercase;
+}
+.mg-rotulo h1, .mg-titulo {
+  margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400;
+  font-size: clamp(30px, 7vw, 44px); line-height: 1.05; color: var(--mg-texto);
+}
+.mg-sub {
+  margin: 0; font-family: var(--mg-fonte-serifa); font-style: italic;
+  font-size: 18px; color: var(--mg-suave);
+}
+
+/* Campos */
+.mg-campo { display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 500; }
+.mg-campo small { font-weight: 400; font-size: 13px; color: var(--mg-suave); }
+.mg-campo input, .mg-campo select {
+  height: 50px; width: 100%; padding: 0 16px;
+  border: 1px solid var(--mg-borda); border-radius: 2px;
+  background: var(--mg-campo); color: var(--mg-texto);
+  font-family: var(--mg-fonte-texto); font-size: 18px;
+}
+.mg-campo input::placeholder { color: var(--mg-suave); opacity: .8; }
+.mg-campo input:focus, .mg-campo select:focus { outline: 1px solid var(--mg-linha); outline-offset: 1px; }
+
+/* Botões */
+.mg-botao {
+  background: var(--mg-linha); color: var(--mg-botao-texto); border: 1px solid var(--mg-linha);
+  font-family: var(--mg-fonte-texto); font-size: 15px; font-weight: 500;
+  padding: 12px 22px; border-radius: 2px; cursor: pointer;
+}
+.mg-botao-sec {
+  background: transparent; color: var(--mg-texto); border: 1px solid var(--mg-linha);
+  font-family: var(--mg-fonte-texto); font-size: 15px;
+  padding: 12px 22px; border-radius: 2px; cursor: pointer;
+}
+.mg-abrir {
+  font-family: var(--mg-fonte-mono); font-size: 12px; letter-spacing: .1em;
+  color: var(--mg-destaque); text-decoration: none;
+}
+
+/* Resultado */
+.mg-resultado { border-top: 1px solid var(--mg-borda); padding-top: 8px; display: flex; flex-direction: column; }
+.mg-linha {
+  display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; font-size: 15px;
+}
+.mg-linha > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mg-linha-total { font-weight: 600; border-top: 1px solid var(--mg-borda); }
+.mg-valor {
+  font-family: var(--mg-fonte-serifa); font-weight: 500; font-size: 46px; line-height: 1;
+  color: var(--mg-destaque);
+}
+
+/* Nota */
+.mg-nota {
+  border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -5px;
+  background: var(--mg-nota); padding: 16px 20px; font-size: 14px; line-height: 1.5;
+}
+.mg-nota::before {
+  content: "NOTA"; display: block; margin-bottom: 6px;
+  font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .4em; color: var(--mg-suave);
+}
+
+.mg-letra-miuda { font-size: 12px; line-height: 1.55; color: var(--mg-suave); }
+
+/* Etiquetas */
+.mg-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; }
+.mg-etiqueta {
+  border: 1px solid var(--mg-borda); color: var(--mg-suave);
+  font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; padding: 4px 10px;
+}
+
+/* Vitrine */
+.mg-vitrine-cabeca { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 32px 0 28px; text-align: center; }
+.mg-vitrine-cabeca .mg-numero { letter-spacing: .6em; font-size: 13px; }
+.mg-vitrine-cabeca .mg-titulo { font-size: clamp(44px, 12vw, 72px); letter-spacing: .03em; }
+.mg-vitrine-cabeca .mg-sub { font-size: 20px; }
+.mg-frascos { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 720px) { .mg-frascos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mg-frasco {
+  background: var(--mg-superficie); border: 1px solid var(--mg-linha);
+  outline: 1px solid var(--mg-linha); outline-offset: -7px;
+  padding: 28px; display: flex; flex-direction: column; gap: 10px;
+  color: var(--mg-texto); text-decoration: none;
+}
+.mg-frasco:hover .mg-abrir { text-decoration: underline; }
+.mg-frasco-num { font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .4em; color: var(--mg-suave); }
+.mg-frasco-titulo { font-family: var(--mg-fonte-marca); font-size: 28px; line-height: 1.1; }
+.mg-frasco-sub { font-size: 14px; color: var(--mg-suave); }
+.mg-frasco .mg-abrir { margin-top: 8px; }
+.mg-frasco-vazio {
+  border: 1px dashed var(--mg-borda); padding: 28px;
+  display: flex; flex-direction: column; gap: 10px; justify-content: center;
+}
+.mg-frasco-vazio span:last-child { font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 20px; color: var(--mg-suave); }

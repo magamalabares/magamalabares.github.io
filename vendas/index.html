@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nº 1 · Quanto eu ganho vendendo? — Magamalabares</title>
+<meta name="description" content="Calculadora de quanto sobra de uma venda na Shopee (vendedor CPF) e na Nuvemshop com Nuvem Pago. Regras de nov/2026.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234a1426'/%3E%3Crect x='3.5' y='3.5' width='57' height='57' fill='none' stroke='%23e6b7a3'/%3E%3Crect x='8.5' y='8.5' width='47' height='47' fill='none' stroke='%23e6b7a3'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Didot,Georgia,serif' font-size='34' fill='%23fbe9e2'%3EM%3C/text%3E%3C/svg%3E">
+<script>
+  /* Aplica o tema salvo antes de desenhar, para não piscar. */
+  try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}
+</script>
+<!-- Fontes da marca. Sem internet, cai no fallback do sistema (ver --mg-fonte-*). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Jost:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Este arquivo funciona sozinho (dois cliques, sem internet).
+   Os tokens abaixo são uma cópia de ../assets/magamalabares.css + estilos da calculadora. */
+:root {
+  --mg-fonte-marca: "Italiana", "Didot", "Bodoni 72", "Bodoni MT", Georgia, serif;
+  --mg-fonte-serifa: "Cormorant Garamond", "EB Garamond", Garamond, Georgia, serif;
+  --mg-fonte-texto: "Jost", "Futura", "Century Gothic", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mg-fonte-mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --mg-fundo: #2e0c18; --mg-superficie: #4a1426; --mg-linha: #e6b7a3; --mg-texto: #fbe9e2;
+  --mg-suave: #e0b3a6; --mg-destaque: #f2c4b4; --mg-borda: #8a4a52; --mg-campo: #2e0c18;
+  --mg-nota: #3b1020; --mg-botao-texto: #2e0c18; --mg-positivo: #a6dcb0; --mg-negativo: #ff9e9e;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="noite"]) {
+    --mg-fundo: #fbeef0; --mg-superficie: #fff9f6; --mg-linha: #9b5a6c; --mg-texto: #4a1426;
+    --mg-suave: #8a4a5c; --mg-destaque: #a8274e; --mg-borda: #d9b3bd; --mg-campo: #fffdfb;
+    --mg-nota: #f6dfe3; --mg-botao-texto: #fbeef0; --mg-positivo: #2b7448; --mg-negativo: #b3261e;
+    color-scheme: light;
+  }
+}
+:root[data-tema="dia"] {
+  --mg-fundo: #fbeef0; --mg-superficie: #fff9f6; --mg-linha: #9b5a6c; --mg-texto: #4a1426;
+  --mg-suave: #8a4a5c; --mg-destaque: #a8274e; --mg-borda: #d9b3bd; --mg-campo: #fffdfb;
+  --mg-nota: #f6dfe3; --mg-botao-texto: #fbeef0; --mg-positivo: #2b7448; --mg-negativo: #b3261e;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--mg-fundo); color: var(--mg-texto); font-family: var(--mg-fonte-texto); font-size: 16px; line-height: 1.5; overflow-x: hidden; }
+a { color: var(--mg-destaque); }
+a:hover { color: var(--mg-texto); }
+[hidden] { display: none !important; }
+
+.mg-pagina { max-width: 1120px; margin: 0 auto; padding: 20px 16px 64px; }
+.mg-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--mg-borda); }
+.mg-marca { font-family: var(--mg-fonte-marca); font-size: 20px; letter-spacing: .06em; color: var(--mg-texto); text-decoration: none; }
+.mg-tema { display: flex; border: 1px solid var(--mg-linha); }
+.mg-tema button { font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; padding: 5px 10px; border: 0; border-radius: 0; background: transparent; color: var(--mg-suave); cursor: pointer; }
+.mg-tema button[aria-pressed="true"] { background: var(--mg-linha); color: var(--mg-botao-texto); }
+
+.mg-rotulo { background: var(--mg-superficie); border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -8px; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+@media (min-width: 640px) { .mg-rotulo { padding: 40px; outline-offset: -10px; } }
+.mg-cabeca { display: flex; flex-direction: column; gap: 6px; }
+.mg-numero { margin: 0; font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .5em; color: var(--mg-suave); text-transform: uppercase; }
+h1 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: clamp(32px, 8vw, 46px); line-height: 1.05; }
+.mg-sub { margin: 0; font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 18px; color: var(--mg-suave); }
+h2 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 26px; line-height: 1.1; }
+
+/* Abas */
+.mg-abas { display: flex; border-bottom: 1px solid var(--mg-borda); gap: 4px; }
+.mg-abas button { flex: 1 1 0; min-width: 0; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px; padding: 12px 4px; font-family: var(--mg-fonte-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--mg-suave); cursor: pointer; }
+.mg-abas button[aria-selected="true"] { color: var(--mg-texto); border-bottom-color: var(--mg-linha); }
+.mg-abas button:focus-visible { outline: 1px solid var(--mg-linha); outline-offset: -3px; }
+
+/* Layout das abas */
+.mg-painel { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.mg-duas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+@media (min-width: 880px) {
+  .mg-duas { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+  .mg-duas > .mg-coluna-resultado { position: sticky; top: 16px; }
+}
+.mg-campos { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.mg-grade-campos { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
+@media (min-width: 640px) { .mg-grade-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.mg-coluna-resultado { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+/* Campos */
+.mg-campo { display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 500; min-width: 0; }
+.mg-campo small { font-weight: 400; font-size: 13px; color: var(--mg-suave); }
+.mg-campo input, .mg-campo select { height: 50px; width: 100%; min-width: 0; padding: 0 16px; border: 1px solid var(--mg-borda); border-radius: 2px; background: var(--mg-campo); color: var(--mg-texto); font-family: var(--mg-fonte-texto); font-size: 18px; }
+.mg-campo input::placeholder { color: var(--mg-suave); opacity: .75; }
+.mg-campo input:focus, .mg-campo select:focus, .mg-check input:focus-visible, .mg-segmento input:focus-visible + span { outline: 1px solid var(--mg-linha); outline-offset: 2px; }
+.mg-dica { font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--mg-suave); }
+.mg-dica strong { color: var(--mg-texto); font-weight: 600; }
+
+.mg-check { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.45; cursor: pointer; }
+.mg-check input { appearance: none; -webkit-appearance: none; flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; border: 1px solid var(--mg-linha); border-radius: 0; background: var(--mg-campo); display: grid; place-content: center; cursor: pointer; }
+.mg-check input:checked::after { content: ""; width: 10px; height: 10px; background: var(--mg-linha); }
+
+/* Segmentado (prazo) */
+.mg-segmento { display: flex; border: 1px solid var(--mg-borda); border-radius: 2px; }
+.mg-segmento label { flex: 1 1 0; min-width: 0; position: relative; cursor: pointer; }
+.mg-segmento label + label { border-left: 1px solid var(--mg-borda); }
+.mg-segmento input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.mg-segmento span { display: block; text-align: center; padding: 13px 4px; font-size: 15px; font-weight: 400; color: var(--mg-suave); }
+.mg-segmento input:checked + span { background: var(--mg-linha); color: var(--mg-botao-texto); font-weight: 500; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
+legend { padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500; }
+
+/* Resultado */
+.mg-resultado { display: flex; flex-direction: column; border-top: 1px solid var(--mg-borda); padding-top: 8px; }
+.mg-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 7px 0; font-size: 15px; }
+.mg-linha > :first-child { min-width: 0; }
+.mg-linha > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mg-linha small { display: block; font-size: 12px; color: var(--mg-suave); }
+.mg-linha-total { font-weight: 600; border-top: 1px solid var(--mg-borda); margin-top: 4px; padding-top: 10px; }
+.mg-recebe { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0 4px; flex-wrap: wrap; }
+.mg-recebe > span:first-child { font-weight: 600; font-size: 15px; }
+.mg-valor { font-family: var(--mg-fonte-serifa); font-weight: 500; font-size: clamp(40px, 11vw, 56px); line-height: 1; font-variant-numeric: tabular-nums; }
+.mg-pos { color: var(--mg-positivo); }
+.mg-neg { color: var(--mg-negativo); }
+.mg-por-item { text-align: right; font-size: 13px; color: var(--mg-suave); }
+.mg-vazio { font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 20px; color: var(--mg-suave); padding: 12px 0; }
+
+/* Rótulo do resultado (Tela B) */
+.mg-rotulo-resultado { border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -6px; padding: 22px 20px; display: flex; flex-direction: column; gap: 4px; }
+.mg-mini-titulo { font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .4em; color: var(--mg-suave); text-transform: uppercase; }
+
+/* Notas e avisos */
+.mg-nota, .mg-aviso, .mg-alerta { padding: 16px 18px; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 6px; }
+.mg-nota { border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -5px; background: var(--mg-nota); }
+.mg-aviso { border: 1px solid var(--mg-destaque); background: var(--mg-nota); }
+.mg-alerta { border: 1px solid var(--mg-negativo); outline: 1px solid var(--mg-negativo); outline-offset: -5px; background: var(--mg-nota); }
+.mg-nota > b, .mg-aviso > b, .mg-alerta > b { font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 12px; letter-spacing: .4em; color: var(--mg-suave); }
+.mg-aviso > b { color: var(--mg-destaque); }
+.mg-alerta > b { color: var(--mg-negativo); }
+.mg-avisos { display: flex; flex-direction: column; gap: 12px; }
+.mg-letra-miuda { font-size: 12px; line-height: 1.6; color: var(--mg-suave); }
+.mg-letra-miuda ul { margin: 6px 0; padding-left: 18px; }
+.mg-letra-miuda p { margin: 6px 0; }
+.mg-letra-miuda a { word-break: break-word; }
+
+/* Peso e medidas */
+details.mg-sanfona { border: 1px solid var(--mg-borda); }
+details.mg-sanfona > summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-weight: 500; }
+details.mg-sanfona > summary::-webkit-details-marker { display: none; }
+details.mg-sanfona > summary::after { content: "ABRIR +"; font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; color: var(--mg-destaque); white-space: nowrap; }
+details.mg-sanfona[open] > summary::after { content: "FECHAR −"; }
+details.mg-sanfona > summary:focus-visible { outline: 1px solid var(--mg-linha); outline-offset: -3px; }
+.mg-sanfona-corpo { padding: 4px 16px 18px; display: flex; flex-direction: column; gap: 16px; }
+.mg-grade-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mg-grade-3 .mg-campo input { padding: 0 10px; }
+.mg-texto-curto { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.55; }
+.mg-texto-curto li + li { margin-top: 6px; }
+
+/* Cartões (Nuvemshop e Comparar) */
+.mg-cartoes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 760px) { .mg-cartoes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 760px) { .mg-cartoes.mg-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .mg-cartoes.mg-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mg-cartao { border: 1px solid var(--mg-borda); padding: 20px 18px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mg-cartao.mg-melhor { border-color: var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -6px; }
+.mg-cartao-cabeca { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.mg-cartao-cabeca h3 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 24px; }
+.mg-selo { font-family: var(--mg-fonte-mono); font-size: 10px; letter-spacing: .12em; color: var(--mg-botao-texto); background: var(--mg-linha); padding: 3px 8px; }
+.mg-cartao .mg-valor { font-size: 40px; }
+.mg-quando { font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .08em; color: var(--mg-suave); text-transform: uppercase; }
+
+.mg-frase { font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 21px; line-height: 1.4; margin: 0; }
+.mg-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; }
+.mg-etiqueta { border: 1px solid var(--mg-borda); color: var(--mg-suave); font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; padding: 4px 10px; }
+</style>
+</head>
+<body>
+<div class="mg-pagina">
+  <header class="mg-topo">
+    <a class="mg-marca" href="../">Magamalabares</a>
+    <div class="mg-tema" role="group" aria-label="Tema">
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
+      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+    </div>
+  </header>
+
+  <main class="mg-rotulo">
+    <div class="mg-cabeca">
+      <p class="mg-numero">Nº 1 · Magamalabares</p>
+      <h1>Quanto eu ganho vendendo?</h1>
+      <p class="mg-sub">Shopee (vendedor CPF) e Nuvemshop · regras de nov/2026</p>
+    </div>
+
+    <div class="mg-abas" role="tablist" aria-label="Plataforma">
+      <button type="button" role="tab" id="tab-shopee" aria-controls="aba-shopee" aria-selected="true" data-aba="shopee">Shopee</button>
+      <button type="button" role="tab" id="tab-nuvemshop" aria-controls="aba-nuvemshop" aria-selected="false" data-aba="nuvemshop" tabindex="-1">Nuvemshop</button>
+      <button type="button" role="tab" id="tab-comparar" aria-controls="aba-comparar" aria-selected="false" data-aba="comparar" tabindex="-1">Comparar</button>
+    </div>
+
+    <!-- ===================== SHOPEE ===================== -->
+    <section class="mg-painel" id="aba-shopee" role="tabpanel" aria-labelledby="tab-shopee">
+      <div class="mg-duas">
+        <div class="mg-campos">
+          <label class="mg-campo">Preço de venda do anúncio (R$)
+            <input id="s-preco" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 59,90">
+          </label>
+          <label class="mg-campo">Custo do produto (R$) <small>(opcional, para ver o lucro)</small>
+            <input id="s-custo" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 20,00">
+          </label>
+          <div class="mg-grade-campos">
+            <label class="mg-campo">Itens no pedido
+              <input id="s-qtd" data-salvar inputmode="numeric" autocomplete="off" placeholder="1" value="1">
+            </label>
+            <label class="mg-campo">Embalagem por item (R$) <small>(opcional)</small>
+              <input id="s-embalagem" data-salvar inputmode="decimal" autocomplete="off" placeholder="0,00">
+            </label>
+          </div>
+          <label class="mg-check">
+            <input type="checkbox" id="s-mais450" data-salvar>
+            <span>Minha loja passou de 450 pedidos nos últimos 90 dias <span class="mg-dica">(+R$ 3 por item)</span></span>
+          </label>
+          <label class="mg-campo">Taxa de Campanha de Destaque (%) <small>(só se a loja estiver em campanha)</small>
+            <input id="s-campanha" data-salvar inputmode="decimal" autocomplete="off" placeholder="0">
+            <span class="mg-dica">O percentual varia (fontes falam de 2,5% a 5%). Confira na tela da campanha. Atenção: durante a campanha, essa taxa vale para <strong>todas</strong> as vendas da loja, não só para os itens em destaque.</span>
+          </label>
+
+          <details class="mg-sanfona" id="s-peso-sanfona">
+            <summary>Peso e medidas do pacote</summary>
+            <div class="mg-sanfona-corpo">
+              <p class="mg-dica" style="margin:0">Meça o pacote <strong>já embalado</strong>.</p>
+              <div class="mg-grade-3">
+                <label class="mg-campo">Compr. (cm)<input id="p-c" data-salvar inputmode="decimal" autocomplete="off" placeholder="20"></label>
+                <label class="mg-campo">Largura (cm)<input id="p-l" data-salvar inputmode="decimal" autocomplete="off" placeholder="15"></label>
+                <label class="mg-campo">Altura (cm)<input id="p-a" data-salvar inputmode="decimal" autocomplete="off" placeholder="5"></label>
+              </div>
+              <label class="mg-campo">Peso real (g)<input id="p-g" data-salvar inputmode="decimal" autocomplete="off" placeholder="300"></label>
+              <div id="p-resultado" class="mg-resultado" aria-live="polite"></div>
+              <ul class="mg-texto-curto">
+                <li>Desde 02/02/2026 a Shopee confere peso e medidas eletronicamente.</li>
+                <li>Se o pacote for <strong>mais pesado ou maior que o cadastrado</strong>, a diferença de frete é descontada automaticamente do seu saldo.</li>
+                <li>Se passar do <strong>limite da modalidade de envio</strong>, a Shopee cobra <strong>R$ 50,00 por pedido</strong>. Se acontecer de novo, pode haver remoção do anúncio, código de violação, cancelamento e até congelamento da conta.</li>
+                <li>Pacote <strong>mais leve</strong> que o cadastrado não tem multa conhecida, mas o frete calculado fica mais caro do que precisava.</li>
+                <li>O peso precisa estar certo <strong>antes da venda</strong>. O pedido usa os dados do anúncio no momento da compra.</li>
+                <li>Ainda sem as embalagens? Some ao peso do produto: envelope plástico ~10–20 g, envelope bolha ~20–40 g, caixa pequena ~50–150 g, caixa média ~150–300 g, plástico bolha e fita ~10–30 g. Nas medidas, some 2 a 4 cm em cada lado do produto. Arredonde para cima.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+
+        <div class="mg-coluna-resultado">
+          <div class="mg-rotulo-resultado" aria-live="polite">
+            <div class="mg-mini-titulo">Composição</div>
+            <div id="s-resultado"></div>
+          </div>
+          <div id="s-avisos" class="mg-avisos" aria-live="polite"></div>
+          <div class="mg-nota"><b>NOTA</b>Não inclui: Shopee Ads, cobrança extra de frete por peso ou medida errados, devoluções por culpa do vendedor e impostos.</div>
+        </div>
+      </div>
+
+      <div class="mg-letra-miuda">
+        <b>Regras usadas (nov/2026)</b> — CPF e CNPJ têm a mesma tabela; a comissão depende do preço do item:
+        <ul>
+          <li>Abaixo de R$ 9,00 → 20% + metade do preço do item</li>
+          <li>R$ 9,00 a R$ 79,99 → 20% + R$ 4,50 por item</li>
+          <li>R$ 80,00 a R$ 99,99 → 14% + R$ 16,00 · R$ 100,00 a R$ 199,99 → 14% + R$ 20,00 · R$ 200,00 ou mais → 14% + R$ 26,00</li>
+          <li>Sem teto de comissão (o limite de R$ 100 acabou em março de 2026). Taxa de transação já incluída. A comissão incide só sobre o produto, nunca sobre o frete.</li>
+          <li>Frete grátis sem comissão extra (a antiga taxa de 6% acabou).</li>
+          <li>CPF com mais de 450 pedidos em 90 dias: +R$ 3,00 por item vendido.</li>
+          <li>Pix acima de R$ 80: o desconto de 5% a 8% do comprador é pago pela Shopee e não muda o seu valor.</li>
+        </ul>
+        <p>As taxas mudaram três vezes em 2026 (março, abril e outubro). Confira na Central do Vendedor › Central de Educação › “Comissão para vendedores CNPJ e CPF em 2026” e compare com o “valor a receber” de um pedido real em Minha Renda.</p>
+        <p><b>Migração para CNPJ:</b> a Shopee exige migrar quando a loja completa 90 dias consecutivos com vendas ativas ou chega a R$ 81 mil em 12 meses. Quem não migra pode ter o saldo bloqueado e a conta restringida. A migração leva cerca de 30 dias. Depois de migrar, o adicional de R$ 3 deixa de ser cobrado em até 7 dias úteis.</p>
+        <p>Fontes: <a href="https://seller.shopee.com.br/edu/article/26839/Comissao-para-vendedores-CNPJ-e-CPF-em-2026" target="_blank" rel="noopener">Comissão para vendedores CNPJ e CPF em 2026</a> · <a href="https://seller.shopee.com.br/edu/article/9216/alterando-o-documento-de-sua-loja-cpf-para-cnpj" target="_blank" rel="noopener">Alterando o documento da loja de CPF para CNPJ</a></p>
+      </div>
+    </section>
+
+    <!-- ===================== NUVEMSHOP ===================== -->
+    <section class="mg-painel" id="aba-nuvemshop" role="tabpanel" aria-labelledby="tab-nuvemshop" hidden>
+      <div class="mg-grade-campos">
+        <label class="mg-campo">Preço de venda (R$)
+          <input id="n-preco" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 79,90">
+        </label>
+        <label class="mg-campo">Custo do produto (R$) <small>(opcional)</small>
+          <input id="n-custo" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 20,00">
+        </label>
+        <label class="mg-campo">Plano
+          <select id="n-plano" data-salvar>
+            <option value="comeco">Começo (grátis)</option>
+            <option value="essencial">Essencial (R$ 69/mês)</option>
+            <option value="impulso">Impulso (R$ 164/mês)</option>
+            <option value="escala">Escala (R$ 449/mês)</option>
+          </select>
+        </label>
+        <fieldset>
+          <legend>Receber o cartão em</legend>
+          <div class="mg-segmento">
+            <label><input type="radio" name="n-prazo" value="30" data-salvar checked><span>30 dias</span></label>
+            <label><input type="radio" name="n-prazo" value="14" data-salvar><span>14 dias</span></label>
+            <label><input type="radio" name="n-prazo" value="2" data-salvar><span>2 dias</span></label>
+          </div>
+        </fieldset>
+        <label class="mg-campo">Frete grátis que eu pago (R$)
+          <input id="n-frete" data-salvar inputmode="decimal" autocomplete="off" placeholder="0,00">
+          <span class="mg-dica">Na Nuvemshop, se você oferece frete grátis, quem paga é você.</span>
+        </label>
+        <label class="mg-campo">Taxa de parcelamento sem juros (%) <small>(só cartão)</small>
+          <input id="n-parcel" data-salvar inputmode="decimal" autocomplete="off" placeholder="0">
+          <span class="mg-dica">Se o cliente parcela com juros, ele paga os juros e você paga só a taxa do cartão. Se você oferece sem juros, a taxa é personalizada: veja em Configurações › Nuvem Pago › Editar › Parcelamento.</span>
+        </label>
+        <label class="mg-campo">Embalagem (R$) <small>(opcional)</small>
+          <input id="n-embalagem" data-salvar inputmode="decimal" autocomplete="off" placeholder="0,00">
+        </label>
+      </div>
+
+      <details class="mg-sanfona" id="n-outro-sanfona">
+        <summary>Uso outro meio de pagamento (Mercado Pago, PagBank…)</summary>
+        <div class="mg-sanfona-corpo">
+          <label class="mg-check">
+            <input type="checkbox" id="n-outro" data-salvar>
+            <span>Calcular também com outro meio de pagamento</span>
+          </label>
+          <label class="mg-campo">Taxa do meio de pagamento (%)
+            <input id="n-outro-pct" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 4,99">
+            <span class="mg-dica">Sem Nuvem Pago, a Nuvemshop cobra tarifa por venda: 2% (Começo e Essencial), 1% (Impulso) ou 0,7% (Escala), além da taxa do meio de pagamento.</span>
+          </label>
+        </div>
+      </details>
+
+      <div id="n-cartoes" class="mg-cartoes" aria-live="polite"></div>
+      <div id="n-avisos" class="mg-avisos" aria-live="polite"></div>
+      <div class="mg-nota"><b>NOTA</b>Não inclui mensalidade, R$ 0,99 por saque, apps pagos, domínio e impostos. Na Nuvemshop você precisa trazer os clientes (anúncios, redes sociais). Na Shopee o movimento já existe.</div>
+
+      <div class="mg-letra-miuda">
+        <b>Regras usadas (nov/2026)</b> — com Nuvem Pago, a Nuvemshop não cobra tarifa por venda; só a taxa do pagamento:
+        <ul>
+          <li>Pix: 0,99%, cai na hora. Boleto: R$ 2,39 por venda, cai em até 2 dias. Iguais em todos os planos.</li>
+          <li>Cartão de crédito (30 / 14 / 2 dias) + R$ 0,35 por venda: Começo 4,69% / 5,19% / 5,69% · Essencial 4,19% / 4,69% / 5,19% · Impulso 3,69% / 4,19% / 4,69% · Escala 3,29% / 3,69% / 3,99%.</li>
+          <li>Saque para o banco: R$ 0,99 por saque (fora da conta por venda).</li>
+        </ul>
+        <p>Fonte: <a href="https://atendimento.nuvemshop.com.br/pt_BR/minha-conta-nuvem-pago/quais-sao-as-taxas-e-tarifas-do-nuvem-pago" target="_blank" rel="noopener">Quais são as taxas e tarifas do Nuvem Pago</a> (atualizada em 23/07/2026). Confira no painel em Configurações › Nuvem Pago.</p>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARAR ===================== -->
+    <section class="mg-painel" id="aba-comparar" role="tabpanel" aria-labelledby="tab-comparar" hidden>
+      <div class="mg-grade-campos">
+        <label class="mg-campo">Preço de venda (R$)
+          <input id="c-preco" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 79,90">
+        </label>
+        <label class="mg-campo">Custo do produto (R$) <small>(opcional)</small>
+          <input id="c-custo" data-salvar inputmode="decimal" autocomplete="off" placeholder="Ex: 20,00">
+        </label>
+      </div>
+      <p class="mg-dica" id="c-opcoes" style="margin:0"></p>
+      <div id="c-cartoes" class="mg-cartoes" aria-live="polite"></div>
+      <p id="c-frase" class="mg-frase" aria-live="polite"></p>
+    </section>
+
+    <div class="mg-etiquetas" aria-hidden="true">
+      <span class="mg-etiqueta">Nº 1</span><span class="mg-etiqueta">VENDAS</span><span class="mg-etiqueta">CALCULADORA</span>
+    </div>
+  </main>
+</div>
+
+<!-- ============================================================
+     REGRAS DE TAXA (funções puras, sem DOM).
+     O arquivo tests/test.js carrega só este bloco para conferir os valores.
+     Para atualizar quando as taxas mudarem, edite as constantes do topo.
+     ============================================================ -->
+<script id="regras">
+var REGRAS_ATUALIZADAS_EM = "nov/2026";
+
+/* Shopee · vendedor CPF · tabela desde 01/03/2026 com o reajuste de 01/10/2026 (nov/2026).
+   CPF e CNPJ têm a mesma tabela. Sem teto de comissão. Taxa de transação já incluída.
+   Frete grátis sem comissão extra. Comissão só sobre o produto, nunca sobre o frete.
+   NÃO usar valores antigos: "20% + R$ 4,00" e "metade do preço abaixo de R$ 8". */
+var SHOPEE = {
+  atualizado: "nov/2026",
+  // "a partir de" (min) em R$, comissão e taxa fixa por item. "metade" = metade do preço do item.
+  faixas: [
+    { min: 0,   pct: 0.20, fixa: "metade" },
+    { min: 9,   pct: 0.20, fixa: 4.50 },
+    { min: 80,  pct: 0.14, fixa: 16.00 },
+    { min: 100, pct: 0.14, fixa: 20.00 },
+    { min: 200, pct: 0.14, fixa: 26.00 },
+    { min: 500, pct: 0.14, fixa: 26.00 }
+  ],
+  adicionalCPF: 3.00,        // por item, se a loja passou de 450 pedidos em 90 dias
+  limiteRegressivo: 12.00,   // abaixo disso a Shopee cobra menos que R$ 3 (tabela não publicada)
+  pixSubsidioAPartirDe: 80,  // desconto Pix de 5% a 8% pago pela Shopee: não entra na conta
+  avisoProdutoBarato: 20     // abaixo disso sugerimos vender em kit
+};
+
+/* Nuvemshop com Nuvem Pago (nov/2026; página da Nuvemshop atualizada em 23/07/2026).
+   NÃO usar valores antigos: "plano grátis com 1% de comissão" ou mensalidades de R$ 59/139/389. */
+var NUVEMSHOP = {
+  atualizado: "nov/2026",
+  pix: 0.0099,          // cai na hora, igual em todos os planos
+  boleto: 2.39,         // fixo por venda, cai em até 2 dias
+  cartaoFixo: 0.35,     // por venda no cartão
+  saque: 0.99,          // por saque: não entra por venda, só nota
+  prazos: [30, 14, 2],
+  planos: {
+    comeco:    { nome: "Começo",    mensalidade: 0,   cartao: { 30: 0.0469, 14: 0.0519, 2: 0.0569 }, tarifaOutroMeio: 0.02 },
+    essencial: { nome: "Essencial", mensalidade: 69,  cartao: { 30: 0.0419, 14: 0.0469, 2: 0.0519 }, tarifaOutroMeio: 0.02 },
+    impulso:   { nome: "Impulso",   mensalidade: 164, cartao: { 30: 0.0369, 14: 0.0419, 2: 0.0469 }, tarifaOutroMeio: 0.01 },
+    escala:    { nome: "Escala",    mensalidade: 449, cartao: { 30: 0.0329, 14: 0.0369, 2: 0.0399 }, tarifaOutroMeio: 0.007 }
+  }
+};
+
+/* Arredonda para centavos. Cada taxa é arredondada antes de somar. */
+function arred(v) { return Math.round(v * 100) / 100; }
+
+/* Lê um número digitado: aceita vírgula ou ponto como separador decimal ("79,90" = "79.90").
+   Se tiver os dois ("1.234,56" ou "1,234.56"), o último é o decimal. Vazio ou inválido → NaN. */
+function lerNumero(txt) {
+  if (txt == null) return NaN;
+  var s = String(txt).replace(/R\$|\s/g, "");
+  if (s === "") return NaN;
+  var v = s.lastIndexOf(","), p = s.lastIndexOf(".");
+  if (v > -1 && p > -1) {
+    s = v > p ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  } else if (v > -1) {
+    s = s.replace(",", ".");
+  }
+  if (!/^-?\d*\.?\d+$|^-?\d+\.$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+
+function faixaShopee(preco) {
+  var f = SHOPEE.faixas[0];
+  for (var i = 0; i < SHOPEE.faixas.length; i++) {
+    // compara em centavos para evitar erro de ponto flutuante perto dos degraus
+    if (Math.round(preco * 100) >= Math.round(SHOPEE.faixas[i].min * 100)) f = SHOPEE.faixas[i];
+  }
+  return f;
+}
+
+/* Degraus onde a taxa fixa sobe (deduzidos da tabela, não fixos no código): 80, 100, 200.
+   O degrau de R$ 9 não entra (abaixo dele a taxa é metade do preço, sem salto) e o de R$ 500 também não (mesma taxa). */
+function degrausShopee() {
+  var d = [];
+  for (var i = 1; i < SHOPEE.faixas.length; i++) {
+    var ant = SHOPEE.faixas[i - 1], f = SHOPEE.faixas[i];
+    if (ant.fixa !== "metade" && f.fixa !== ant.fixa) d.push(f.min);
+  }
+  return d;
+}
+
+/* Shopee CPF.
+   params: { preco, custo?, qtd?=1, mais450?=false, campanhaPct?=0, embalagem?=0 }
+   Calcula por item e multiplica pela quantidade (a taxa fixa e o adicional são por item).
+   Interpretação: a embalagem é informada por item, como o custo. */
+function calcShopee(params) {
+  var preco = +params.preco || 0;
+  var qtd = Math.max(1, Math.floor(+params.qtd || 1));
+  var f = faixaShopee(preco);
+  var comissao = arred(preco * f.pct);
+  var taxaFixa = f.fixa === "metade" ? arred(preco / 2) : f.fixa;
+  // Abaixo de R$ 12 a Shopee cobra menos que R$ 3, mas não publica quanto: somamos os R$ 3 inteiros (pior caso).
+  var adicionalCPF = params.mais450 ? SHOPEE.adicionalCPF : 0;
+  var campanhaPct = +params.campanhaPct || 0;
+  var taxaCampanha = arred(preco * campanhaPct / 100);
+  var totalTaxas = arred(comissao + taxaFixa + adicionalCPF + taxaCampanha);
+  var recebe = arred(preco - totalTaxas);
+  var temCusto = params.custo != null && !isNaN(params.custo);
+  var custo = temCusto ? +params.custo : 0;
+  var embalagem = +params.embalagem || 0;
+  var lucro = temCusto ? arred(recebe - custo - embalagem) : null;
+
+  var item = {
+    preco: preco, comissao: comissao, taxaFixa: taxaFixa, adicionalCPF: adicionalCPF,
+    taxaCampanha: taxaCampanha, totalTaxas: totalTaxas, recebe: recebe,
+    custo: temCusto ? custo : null, embalagem: embalagem, lucro: lucro
+  };
+  var total = {};
+  for (var k in item) total[k] = item[k] == null ? null : arred(item[k] * qtd);
+
+  return {
+    faixa: f, pctComissao: f.pct * 100, campanhaPct: campanhaPct, qtd: qtd,
+    item: item, total: total,
+    pctTaxas: preco > 0 ? totalTaxas / preco * 100 : 0,
+    margem: temCusto && preco > 0 ? lucro / preco * 100 : null,
+    abaixoRegressivo: !!params.mais450 && preco < SHOPEE.limiteRegressivo,
+    subsidioPix: preco >= SHOPEE.pixSubsidioAPartirDe
+  };
+}
+
+/* Ponto de equilíbrio de um degrau: o menor preço da faixa nova em que o valor recebido
+   é maior ou igual ao de R$ 0,01 abaixo do degrau. Usa as mesmas opções (450+, campanha). */
+function equilibrioShopee(degrau, params) {
+  var base = {};
+  for (var k in params) base[k] = params[k];
+  base.qtd = 1;
+  var precoAntes = arred(degrau - 0.01);
+  base.preco = precoAntes;
+  var antes = calcShopee(base);
+  var ref = antes.item.recebe;
+  var inicio = Math.round(degrau * 100);
+  for (var c = inicio; c < inicio + 100000; c++) {
+    base.preco = c / 100;
+    if (calcShopee(base).item.recebe >= ref) {
+      return { degrau: degrau, precoAntes: precoAntes, recebeAntes: ref, fixaAntes: antes.item.taxaFixa,
+               fixaDepois: faixaShopee(degrau).fixa, preco: c / 100 };
+    }
+  }
+  return null;
+}
+
+/* Nuvemshop com Nuvem Pago.
+   params: { preco, custo?, plano="comeco", prazo=30, freteGratis?=0, parcelamentoPct?=0,
+             embalagem?=0, outroMeio?=false, outroMeioPct?=0 }
+   Retorna { pix, cartao, boleto, outro?, melhor }, cada um com linhas de desconto, total e recebe.
+   Interpretação: o frete grátis pago pelo lojista entra como desconto em todos os meios;
+   o parcelamento sem juros só vale para o cartão; a embalagem só entra no lucro. */
+function calcNuvemshop(params) {
+  var preco = +params.preco || 0;
+  var plano = NUVEMSHOP.planos[params.plano] || NUVEMSHOP.planos.comeco;
+  var prazo = plano.cartao[params.prazo] != null ? +params.prazo : 30;
+  var frete = arred(+params.freteGratis || 0);
+  var parcel = +params.parcelamentoPct || 0;
+  var temCusto = params.custo != null && !isNaN(params.custo);
+  var custo = temCusto ? +params.custo : 0;
+  var embalagem = +params.embalagem || 0;
+
+  function montar(linhas, quando) {
+    if (frete > 0) linhas.push({ rotulo: "Frete grátis (você paga)", valor: frete });
+    var total = 0;
+    for (var i = 0; i < linhas.length; i++) total += linhas[i].valor;
+    total = arred(total);
+    var recebe = arred(preco - total);
+    var lucro = temCusto ? arred(recebe - custo - embalagem) : null;
+    return {
+      linhas: linhas, total: total, recebe: recebe, lucro: lucro, quando: quando,
+      custo: temCusto ? custo : null, embalagem: embalagem,
+      pctDescontos: preco > 0 ? total / preco * 100 : 0,
+      margem: temCusto && preco > 0 ? lucro / preco * 100 : null
+    };
+  }
+
+  var r = {
+    plano: plano, prazo: prazo,
+    pix: montar([{ rotulo: "Taxa Pix", pct: NUVEMSHOP.pix * 100, valor: arred(preco * NUVEMSHOP.pix) }], "cai na hora"),
+    cartao: montar((function () {
+      var pct = plano.cartao[prazo];
+      var l = [
+        { rotulo: "Taxa do cartão", pct: pct * 100, valor: arred(preco * pct) },
+        { rotulo: "Tarifa por venda no cartão", valor: NUVEMSHOP.cartaoFixo }
+      ];
+      if (parcel > 0) l.push({ rotulo: "Parcelamento sem juros", pct: parcel, valor: arred(preco * parcel / 100) });
+      return l;
+    })(), "cai em " + prazo + " dias"),
+    boleto: montar([{ rotulo: "Tarifa do boleto", valor: NUVEMSHOP.boleto }], "cai em até 2 dias")
+  };
+
+  if (params.outroMeio) {
+    var meio = +params.outroMeioPct || 0;
+    r.outro = montar([
+      { rotulo: "Tarifa Nuvemshop por venda", pct: plano.tarifaOutroMeio * 100, valor: arred(preco * plano.tarifaOutroMeio) },
+      { rotulo: "Taxa do meio de pagamento", pct: meio, valor: arred(preco * meio / 100) }
+    ], "prazo do meio de pagamento");
+  }
+
+  var melhor = "pix";
+  ["cartao", "boleto", "outro"].forEach(function (k) { if (r[k] && r[k].recebe > r[melhor].recebe) melhor = k; });
+  r.melhor = melhor;
+  return r;
+}
+</script>
+
+<!-- ============================================================
+     INTERFACE
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var CHAVE = "mg-vendas-v1";
+
+  /* ---------- formatação ---------- */
+  function brl(v) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+  function menos(v) { return "− " + brl(v); }
+  function pct(v, casas) { return v.toLocaleString("pt-BR", { maximumFractionDigits: casas == null ? 1 : casas }) + "%"; }
+  function cor(v) { return v < 0 ? "mg-neg" : "mg-pos"; }
+  function num(id) { return lerNumero($(id).value); }
+  function opt(id) { var v = num(id); return isNaN(v) ? null : v; }
+  function zero(id) { var v = num(id); return isNaN(v) ? 0 : v; }
+  function linha(rotulo, valor, extra) {
+    return '<div class="mg-linha' + (extra || "") + '"><span>' + rotulo + "</span><span>" + valor + "</span></div>";
+  }
+
+  /* ---------- tema ---------- */
+  var html = document.documentElement;
+  var midiaDia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
+  function temaEfetivo() {
+    var t = html.getAttribute("data-tema");
+    if (t === "noite" || t === "dia") return t;
+    return midiaDia && midiaDia.matches ? "dia" : "noite";
+  }
+  function marcarTema() {
+    var t = temaEfetivo();
+    document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-tema-opcao") === t));
+    });
+  }
+  document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-tema-opcao");
+      html.setAttribute("data-tema", t);
+      try { localStorage.setItem("mg-tema", t); } catch (e) {}
+      marcarTema();
+    });
+  });
+  if (midiaDia && midiaDia.addEventListener) midiaDia.addEventListener("change", marcarTema);
+  marcarTema();
+
+  /* ---------- memória (localStorage) ---------- */
+  function salvar() {
+    var dados = { aba: abaAtual };
+    document.querySelectorAll("[data-salvar]").forEach(function (el) {
+      if (el.type === "radio") { if (el.checked) dados[el.name] = el.value; }
+      else if (el.type === "checkbox") dados[el.id] = el.checked;
+      else dados[el.id] = el.value;
+    });
+    dados["s-peso-sanfona"] = $("s-peso-sanfona").open;
+    dados["n-outro-sanfona"] = $("n-outro-sanfona").open;
+    try { localStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (e) { /* navegador bloqueou */ }
+  }
+  function carregar() {
+    var dados = null;
+    try { dados = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) { dados = null; }
+    if (!dados || typeof dados !== "object") return null;
+    document.querySelectorAll("[data-salvar]").forEach(function (el) {
+      if (el.type === "radio") { if (dados[el.name] != null) el.checked = dados[el.name] === el.value; }
+      else if (el.type === "checkbox") { if (dados[el.id] != null) el.checked = !!dados[el.id]; }
+      else if (typeof dados[el.id] === "string") {
+        if (el.tagName === "SELECT" && !el.querySelector('option[value="' + dados[el.id] + '"]')) return;
+        el.value = dados[el.id];
+      }
+    });
+    if (dados["s-peso-sanfona"]) $("s-peso-sanfona").open = true;
+    if (dados["n-outro-sanfona"]) $("n-outro-sanfona").open = true;
+    return dados;
+  }
+
+  /* ---------- parâmetros de cada aba ---------- */
+  function paramsShopee(preco, custo) {
+    return {
+      preco: preco, custo: custo,
+      qtd: Math.max(1, Math.floor(zero("s-qtd")) || 1),
+      mais450: $("s-mais450").checked,
+      campanhaPct: zero("s-campanha"),
+      embalagem: zero("s-embalagem")
+    };
+  }
+  function prazoNuvem() {
+    var r = document.querySelector('input[name="n-prazo"]:checked');
+    return r ? +r.value : 30;
+  }
+  function paramsNuvem(preco, custo) {
+    return {
+      preco: preco, custo: custo,
+      plano: $("n-plano").value, prazo: prazoNuvem(),
+      freteGratis: zero("n-frete"), parcelamentoPct: zero("n-parcel"),
+      embalagem: zero("n-embalagem"),
+      outroMeio: $("n-outro").checked, outroMeioPct: zero("n-outro-pct")
+    };
+  }
+
+  /* ---------- Shopee ---------- */
+  function renderShopee() {
+    var preco = num("s-preco");
+    var saida = $("s-resultado"), avisos = $("s-avisos");
+    if (isNaN(preco) || preco <= 0) {
+      saida.innerHTML = '<div class="mg-vazio">Digite o preço de venda para ver quanto sobra.</div>';
+      avisos.innerHTML = "";
+      return;
+    }
+    var p = paramsShopee(preco, opt("s-custo"));
+    var r = calcShopee(p), it = r.item, tt = r.total, q = r.qtd;
+    var porItem = function (v) { return q > 1 ? "<small>" + brl(v) + " × " + q + "</small>" : ""; };
+
+    var h = '<div class="mg-resultado">';
+    h += linha("Preço" + (q > 1 ? " (" + q + " itens)" : "") + porItem(it.preco), brl(tt.preco));
+    h += linha("Comissão (" + pct(r.pctComissao) + ")" + porItem(it.comissao), menos(tt.comissao));
+    h += linha("Taxa fixa por item" + (r.faixa.fixa === "metade" ? " (metade do preço)" : "") + porItem(it.taxaFixa), menos(tt.taxaFixa));
+    if (it.adicionalCPF) h += linha("Adicional CPF (+450 pedidos)" + porItem(it.adicionalCPF), menos(tt.adicionalCPF));
+    if (it.taxaCampanha) h += linha("Campanha de Destaque (" + pct(r.campanhaPct, 2) + ")" + porItem(it.taxaCampanha), menos(tt.taxaCampanha));
+    h += linha("Total de taxas (" + pct(r.pctTaxas) + ")", menos(tt.totalTaxas), " mg-linha-total");
+    h += '<div class="mg-recebe"><span>Você recebe</span><span class="mg-valor ' + cor(tt.recebe) + '">' + brl(tt.recebe) + "</span></div>";
+    if (q > 1) h += '<div class="mg-por-item">' + brl(it.recebe) + " por item</div>";
+    if (it.lucro != null) {
+      h += linha("Custo do produto" + porItem(it.custo), menos(tt.custo), " mg-linha-total");
+      if (it.embalagem) h += linha("Embalagem" + porItem(it.embalagem), menos(tt.embalagem));
+      h += linha("<b>Lucro</b>", '<b class="' + cor(tt.lucro) + '">' + brl(tt.lucro) + "</b>");
+      h += linha("Margem", '<span class="' + cor(r.margem) + '">' + pct(r.margem) + "</span>");
+    }
+    h += "</div>";
+    saida.innerHTML = h;
+
+    /* avisos */
+    var a = [];
+    if (tt.recebe < 0) a.push(alerta("Com esse preço as taxas passam do valor da venda: você <b>paga</b> " + brl(-tt.recebe) + " para vender."));
+    else if (tt.lucro != null && tt.lucro < 0) a.push(alerta("Prejuízo de " + brl(-tt.lucro) + (q > 1 ? " no pedido" : " por venda") + ". O que você recebe não cobre o custo" + (it.embalagem ? " e a embalagem" : "") + "."));
+
+    degrausShopee().forEach(function (d) {
+      var eq = equilibrioShopee(d, p);
+      if (eq && preco >= d && preco < eq.preco) {
+        a.push(aviso("Você recebe MENOS do que vendendo a " + brl(eq.precoAntes) + " (que deixa " + brl(eq.recebeAntes) +
+          "). A taxa fixa pula de " + brl(eq.fixaAntes) + " para " + brl(eq.fixaDepois) + ". Venda a " + brl(eq.precoAntes) +
+          " ou suba para pelo menos <b>" + brl(eq.preco) + "</b>."));
+      }
+    });
+
+    if (preco < SHOPEE.avisoProdutoBarato) {
+      var msg = "A taxa fixa pesa muito em produtos baratos. Considere vender em kit (várias unidades em um anúncio só) para pagar a taxa fixa uma vez.";
+      var limiteKit = degrausShopee()[0] - 0.01; // kit não deve passar do primeiro degrau (R$ 79,99)
+      var n = Math.min(Math.max(2, Math.ceil(SHOPEE.avisoProdutoBarato / preco)), Math.floor(limiteKit / preco));
+      if (n >= 2) {
+        var pk = {}; for (var k in p) pk[k] = p[k];
+        pk.preco = arred(preco * n); pk.qtd = 1; pk.custo = null;
+        var kit = calcShopee(pk);
+        msg += " Kit com " + n + " unidades a " + brl(pk.preco) + " sobraria <b>" + brl(kit.item.recebe) + "</b> (vendendo " + n + " avulsas: " + brl(arred(it.recebe * n)) + ").";
+      }
+      a.push(aviso(msg));
+    }
+    if (r.abaixoRegressivo) a.push(aviso("Para produtos abaixo de R$ 12, a Shopee cobra um valor menor que R$ 3, mas não publica quanto. O valor real pode ser um pouco melhor."));
+    if (r.subsidioPix) a.push(nota("No Pix, o comprador ganha de 5% a 8% de desconto em itens a partir de R$ 80, mas quem paga é a Shopee. Você recebe o mesmo valor."));
+    avisos.innerHTML = a.join("");
+  }
+  function aviso(t) { return '<div class="mg-aviso" role="status"><b>ATENÇÃO</b><span>' + t + "</span></div>"; }
+  function alerta(t) { return '<div class="mg-alerta" role="alert"><b>ALERTA</b><span>' + t + "</span></div>"; }
+  function nota(t) { return '<div class="mg-nota"><b>NOTA</b><span>' + t + "</span></div>"; }
+
+  /* ---------- Peso e medidas ---------- */
+  function fmt(v, casas) { return v.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas }); }
+  function renderPeso() {
+    var c = num("p-c"), l = num("p-l"), a = num("p-a"), g = num("p-g");
+    var temMedidas = c > 0 && l > 0 && a > 0, temPeso = g > 0;
+    var saida = $("p-resultado");
+    if (!temMedidas && !temPeso) { saida.innerHTML = '<div class="mg-dica">Preencha as medidas e o peso para ver a sugestão.</div>'; return; }
+    var cubico = temMedidas ? c * l * a / 6000 : 0;   // kg
+    var real = temPeso ? g / 1000 : 0;                  // kg
+    var considerado = Math.max(cubico, real);
+    var folga = Math.max(considerado * 0.10, 0.050);    // ~10% ou 50 g, o que for maior
+    var sugestaoG = Math.ceil((considerado + folga) * 1000 / 10) * 10; // arredonda para cima, de 10 em 10 g
+    var h = "";
+    if (temMedidas) h += linha("Peso cúbico (C × L × A ÷ 6000)", fmt(cubico, 3) + " kg");
+    if (temPeso) h += linha("Peso real", fmt(real, 3) + " kg");
+    h += linha("Peso considerado (o maior)", fmt(considerado, 3) + " kg", " mg-linha-total");
+    h += linha("<b>Cadastre no anúncio</b>", "<b>" + sugestaoG.toLocaleString("pt-BR") + " g</b>");
+    if (temMedidas && cubico > real && temPeso) h += '<div class="mg-dica">O tamanho pesa mais que o produto. Uma embalagem menor pode baratear o frete.</div>';
+    if (temMedidas) h += '<div class="mg-dica">Medidas para cadastrar: ' + [c, l, a].map(function (x) { return Math.ceil(x); }).join(" × ") + " cm (arredondadas para cima).</div>";
+    saida.innerHTML = h;
+  }
+
+  /* ---------- Nuvemshop ---------- */
+  var NOMES = { pix: "Pix", cartao: "Cartão", boleto: "Boleto", outro: "Outro meio" };
+  function cartaoHTML(titulo, preco, r, melhor, subtitulo) {
+    var h = '<article class="mg-cartao' + (melhor ? " mg-melhor" : "") + '">';
+    h += '<div class="mg-cartao-cabeca"><h3>' + titulo + "</h3>" + (melhor ? '<span class="mg-selo">DEIXA MAIS</span>' : "") + "</div>";
+    if (subtitulo) h += '<div class="mg-quando">' + subtitulo + "</div>";
+    h += '<div class="mg-resultado">';
+    h += linha("Preço", brl(preco));
+    r.linhas.forEach(function (l) { h += linha(l.rotulo + (l.pct != null ? " (" + pct(l.pct, 2) + ")" : ""), menos(l.valor)); });
+    h += linha("Total descontado (" + pct(r.pctDescontos, r.pctDescontos < 10 ? 2 : 1) + ")", menos(r.total), " mg-linha-total");
+    h += '<div class="mg-recebe"><span>Você recebe</span><span class="mg-valor ' + cor(r.recebe) + '">' + brl(r.recebe) + "</span></div>";
+    if (r.quando) h += '<div class="mg-quando" style="text-align:right">' + r.quando + "</div>";
+    if (r.lucro != null) {
+      h += linha("Custo do produto", menos(r.custo), " mg-linha-total");
+      if (r.embalagem) h += linha("Embalagem", menos(r.embalagem));
+      h += linha("<b>Lucro</b>", '<b class="' + cor(r.lucro) + '">' + brl(r.lucro) + "</b>");
+      h += linha("Margem", '<span class="' + cor(r.margem) + '">' + pct(r.margem) + "</span>");
+    }
+    return h + "</div></article>";
+  }
+  function renderNuvem() {
+    var preco = num("n-preco");
+    var saida = $("n-cartoes"), avisos = $("n-avisos");
+    if (isNaN(preco) || preco <= 0) {
+      saida.className = "mg-cartoes";
+      saida.innerHTML = '<div class="mg-vazio">Digite o preço de venda para ver quanto sobra em cada forma de pagamento.</div>';
+      avisos.innerHTML = "";
+      return;
+    }
+    var p = paramsNuvem(preco, opt("n-custo"));
+    var r = calcNuvemshop(p);
+    var chaves = r.outro ? ["pix", "cartao", "boleto", "outro"] : ["pix", "cartao", "boleto"];
+    saida.className = "mg-cartoes" + (r.outro ? " mg-4" : "");
+    saida.innerHTML = chaves.map(function (k) {
+      var sub = k === "cartao" ? "Plano " + r.plano.nome : (k === "outro" ? "Sem Nuvem Pago" : "");
+      return cartaoHTML(NOMES[k], preco, r[k], r.melhor === k, sub);
+    }).join("");
+
+    var a = [];
+    var negativos = chaves.filter(function (k) { return r[k].recebe < 0 || (r[k].lucro != null && r[k].lucro < 0); });
+    if (negativos.length) a.push(alerta("Prejuízo em: " + negativos.map(function (k) { return NOMES[k]; }).join(", ") + ". Revise o preço, o custo ou o frete grátis."));
+    var mens = r.plano.mensalidade;
+    if (mens > 0) {
+      if (r.pix.lucro == null) a.push(nota("O plano " + r.plano.nome + " custa " + brl(mens) + " por mês. Informe o custo do produto para ver quantas vendas pagam a mensalidade."));
+      else if (r.pix.lucro <= 0) a.push(alerta("Sem lucro no Pix, nenhuma quantidade de vendas paga a mensalidade de " + brl(mens) + " do plano " + r.plano.nome + "."));
+      else {
+        var n = Math.ceil(mens / r.pix.lucro - 1e-9);
+        a.push(aviso("Para pagar o plano " + r.plano.nome + " (" + brl(mens) + "/mês) você precisa de <b>" + n + (n === 1 ? " venda" : " vendas") + " por mês</b> no Pix (lucro de " + brl(r.pix.lucro) + " por venda), só para empatar."));
+      }
+    }
+    avisos.innerHTML = a.join("");
+  }
+
+  /* ---------- Comparar ---------- */
+  function renderComparar() {
+    var p = r_planoTexto();
+    $("c-opcoes").innerHTML = p;
+    var preco = num("c-preco");
+    var saida = $("c-cartoes"), frase = $("c-frase");
+    if (isNaN(preco) || preco <= 0) {
+      saida.innerHTML = '<div class="mg-vazio">Digite o preço para comparar as plataformas.</div>';
+      frase.textContent = "";
+      return;
+    }
+    var custo = opt("c-custo");
+    // Comparação por venda de 1 item (a quantidade da aba Shopee não entra aqui).
+    var ps = paramsShopee(preco, custo); ps.qtd = 1;
+    var s = calcShopee(ps);
+    var n = calcNuvemshop(paramsNuvem(preco, custo));
+
+    var linhasShopee = [{ rotulo: "Comissão", pct: s.pctComissao, valor: s.item.comissao }, { rotulo: "Taxa fixa", valor: s.item.taxaFixa }];
+    if (s.item.adicionalCPF) linhasShopee.push({ rotulo: "Adicional CPF", valor: s.item.adicionalCPF });
+    if (s.item.taxaCampanha) linhasShopee.push({ rotulo: "Campanha", pct: s.campanhaPct, valor: s.item.taxaCampanha });
+    var rs = {
+      linhas: linhasShopee, total: s.item.totalTaxas, recebe: s.item.recebe, lucro: s.item.lucro,
+      custo: s.item.custo, embalagem: s.item.embalagem, margem: s.margem, pctDescontos: s.pctTaxas, quando: ""
+    };
+    var opcoes = { shopee: rs, pix: n.pix, cartao: n.cartao };
+    var melhor = "shopee";
+    ["pix", "cartao"].forEach(function (k) { if (opcoes[k].recebe > opcoes[melhor].recebe) melhor = k; });
+
+    saida.className = "mg-cartoes";
+    saida.innerHTML =
+      cartaoHTML("Shopee CPF", preco, rs, melhor === "shopee", "Taxas da Shopee") +
+      cartaoHTML("Nuvemshop Pix", preco, n.pix, melhor === "pix", "Nuvem Pago") +
+      cartaoHTML("Nuvemshop Cartão", preco, n.cartao, melhor === "cartao", "Plano " + n.plano.nome + " · " + n.prazo + " dias");
+
+    var dif = arred(n.pix.recebe - rs.recebe);
+    if (dif > 0) {
+      frase.innerHTML = "Na Shopee você recebe " + brl(dif) + " a menos por venda (comparado ao Pix na Nuvemshop), mas ela traz os compradores. Na Nuvemshop, o frete grátis e a divulgação ficam por sua conta.";
+    } else if (dif < 0) {
+      frase.innerHTML = "Com essas opções, a Shopee deixa " + brl(-dif) + " a mais por venda que o Pix na Nuvemshop, e ainda traz os compradores. Na Nuvemshop, o frete grátis e a divulgação ficam por sua conta.";
+    } else {
+      frase.innerHTML = "As duas deixam o mesmo valor, mas a Shopee traz os compradores. Na Nuvemshop, o frete grátis e a divulgação ficam por sua conta.";
+    }
+  }
+  function r_planoTexto() {
+    var partes = [];
+    if ($("s-mais450").checked) partes.push("+450 pedidos");
+    var camp = zero("s-campanha"); if (camp) partes.push("campanha " + pct(camp, 2));
+    var embS = zero("s-embalagem"); if (embS) partes.push("embalagem " + brl(embS));
+    var plano = NUVEMSHOP.planos[$("n-plano").value] || NUVEMSHOP.planos.comeco;
+    var nv = ["plano " + plano.nome, "cartão em " + prazoNuvem() + " dias"];
+    var fr = zero("n-frete"); if (fr) nv.push("frete grátis " + brl(fr));
+    var pa = zero("n-parcel"); if (pa) nv.push("parcelamento " + pct(pa, 2));
+    var embN = zero("n-embalagem"); if (embN) nv.push("embalagem " + brl(embN));
+    return "Usa as opções das outras abas. Shopee: " + (partes.length ? partes.join(", ") : "sem adicionais") + ", 1 item. Nuvemshop: " + nv.join(", ") + ".";
+  }
+
+  /* ---------- abas ---------- */
+  var abaAtual = "shopee";
+  var botoesAba = Array.prototype.slice.call(document.querySelectorAll("[data-aba]"));
+  function mostrarAba(nome, focar) {
+    if (["shopee", "nuvemshop", "comparar"].indexOf(nome) < 0) nome = "shopee";
+    abaAtual = nome;
+    botoesAba.forEach(function (b) {
+      var ativo = b.getAttribute("data-aba") === nome;
+      b.setAttribute("aria-selected", String(ativo));
+      b.tabIndex = ativo ? 0 : -1;
+      if (ativo && focar) b.focus();
+      $("aba-" + b.getAttribute("data-aba")).hidden = !ativo;
+    });
+    // Ao abrir "Comparar" vazio, aproveita o preço/custo já digitados na Shopee.
+    if (nome === "comparar" && $("c-preco").value.trim() === "" && $("s-preco").value.trim() !== "") {
+      $("c-preco").value = $("s-preco").value;
+      if ($("c-custo").value.trim() === "") $("c-custo").value = $("s-custo").value;
+    }
+    tudo();
+  }
+  botoesAba.forEach(function (b, i) {
+    b.addEventListener("click", function () { mostrarAba(b.getAttribute("data-aba")); });
+    b.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      mostrarAba(botoesAba[(i + d + botoesAba.length) % botoesAba.length].getAttribute("data-aba"), true);
+    });
+  });
+
+  /* ---------- liga tudo ---------- */
+  function tudo() {
+    renderShopee(); renderPeso(); renderNuvem(); renderComparar();
+    salvar();
+  }
+  document.addEventListener("input", tudo);
+  document.addEventListener("change", tudo);
+  $("s-peso-sanfona").addEventListener("toggle", salvar);
+  $("n-outro-sanfona").addEventListener("toggle", salvar);
+
+  var salvo = carregar();
+  var hash = (location.hash || "").replace("#", "");
+  mostrarAba(hash || (salvo && salvo.aba) || "shopee");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Magamalabares</title>
+<meta name="description" content="Utilitários pessoais, um frasco de cada vez.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234a1426'/%3E%3Crect x='3.5' y='3.5' width='57' height='57' fill='none' stroke='%23e6b7a3'/%3E%3Crect x='8.5' y='8.5' width='47' height='47' fill='none' stroke='%23e6b7a3'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Didot,Georgia,serif' font-size='34' fill='%23fbe9e2'%3EM%3C/text%3E%3C/svg%3E">
+<script>try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}</script>
+<link rel="stylesheet" href="assets/magamalabares.css">
+</head>
+<body>
+<div class="mg-pagina">
+  <header class="mg-topo">
+    <a class="mg-marca" href="./">Magamalabares</a>
+    <div class="mg-tema" role="group" aria-label="Tema">
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
+      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="mg-vitrine-cabeca">
+      <p class="mg-numero">Coleção pessoal</p>
+      <h1 class="mg-titulo">Magamalabares</h1>
+      <p class="mg-sub">utilitários pessoais, um frasco de cada vez</p>
+    </div>
+
+    <div class="mg-frascos">
+      <a class="mg-frasco" href="vendas/">
+        <span class="mg-frasco-num">Nº 1</span>
+        <span class="mg-frasco-titulo">Quanto eu ganho vendendo?</span>
+        <span class="mg-frasco-sub">Shopee (vendedor CPF) e Nuvemshop · regras de nov/2026</span>
+        <span class="mg-abrir">ABRIR →</span>
+      </a>
+      <div class="mg-frasco-vazio">
+        <span class="mg-frasco-num">Nº 2</span>
+        <span>próxima utilidade</span>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/magamalabares.js"></script>
+</body>
+</html>
