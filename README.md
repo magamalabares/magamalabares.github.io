@@ -10,6 +10,7 @@ Repositório pessoal de utilitários: calculadoras, scripts e pequenas ferrament
 | Nº | Utilidade | |
 |---|---|---|
 | 1 | Quanto eu ganho vendendo? Shopee (CPF) e Nuvemshop, regras de nov/2026 | [abrir](vendas/) |
+| 2 | Qual embalagem eu cadastro? Peso e medidas do pacote a partir do produto | [abrir](vendas/embalagem.html) |
 
 ## Estrutura
 
@@ -24,6 +25,8 @@ modelo/index.html       ← copie para criar uma utilidade nova
 vendas/
   index.html            ← Nº 1 · arquivo único, funciona sem internet
   test.js               ← testes das taxas: node vendas/test.js
+  embalagem.html        ← Nº 2 · estimador de embalagem, arquivo único
+  test-embalagem.js     ← testes da embalagem: node vendas/test-embalagem.js
 ```
 
 ## Utilidade nova

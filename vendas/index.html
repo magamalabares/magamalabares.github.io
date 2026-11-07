@@ -62,6 +62,9 @@ a:hover { color: var(--mg-texto); }
 h1 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: clamp(32px, 8vw, 46px); line-height: 1.05; }
 .mg-sub { margin: 0; font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 18px; color: var(--mg-suave); }
 h2 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 26px; line-height: 1.1; }
+.mg-outras { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; font-family: var(--mg-fonte-mono); font-size: 12px; letter-spacing: .06em; color: var(--mg-suave); margin-top: 6px; }
+.mg-outras a { text-decoration: none; }
+.mg-outras a:hover { text-decoration: underline; }
 
 /* Abas */
 .mg-abas { display: flex; border-bottom: 1px solid var(--mg-borda); gap: 4px; }
@@ -183,6 +186,9 @@ details.mg-sanfona > summary:focus-visible { outline: 1px solid var(--mg-linha);
       <p class="mg-numero">Nº 1 · Magamalabares</p>
       <h1>Quanto eu ganho vendendo?</h1>
       <p class="mg-sub">Shopee (vendedor CPF) e Nuvemshop · regras de nov/2026</p>
+      <nav class="mg-outras" aria-label="Outras utilidades">
+        <span>Também:</span><a href="embalagem.html">Nº 2 · Qual embalagem eu cadastro? →</a>
+      </nav>
     </div>
 
     <div class="mg-abas" role="tablist" aria-label="Plataforma">
@@ -235,7 +241,7 @@ details.mg-sanfona > summary:focus-visible { outline: 1px solid var(--mg-linha);
                 <li>Se passar do <strong>limite da modalidade de envio</strong>, a Shopee cobra <strong>R$ 50,00 por pedido</strong>. Se acontecer de novo, pode haver remoção do anúncio, código de violação, cancelamento e até congelamento da conta.</li>
                 <li>Pacote <strong>mais leve</strong> que o cadastrado não tem multa conhecida, mas o frete calculado fica mais caro do que precisava.</li>
                 <li>O peso precisa estar certo <strong>antes da venda</strong>. O pedido usa os dados do anúncio no momento da compra.</li>
-                <li>Ainda sem as embalagens? Some ao peso do produto: envelope plástico ~10–20 g, envelope bolha ~20–40 g, caixa pequena ~50–150 g, caixa média ~150–300 g, plástico bolha e fita ~10–30 g. Nas medidas, some 2 a 4 cm em cada lado do produto. Arredonde para cima.</li>
+                <li>Ainda sem as embalagens? Use o <a href="embalagem.html">estimador de embalagem (Nº 2)</a>. Conta rápida: some ao peso do produto: envelope plástico ~10–20 g, envelope bolha ~20–40 g, caixa pequena ~50–150 g, caixa média ~150–300 g, plástico bolha e fita ~10–30 g. Nas medidas, some 2 a 4 cm em cada lado do produto. Arredonde para cima.</li>
               </ul>
             </div>
           </details>

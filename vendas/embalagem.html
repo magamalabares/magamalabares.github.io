@@ -1,0 +1,1448 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nº 2 · Qual embalagem eu cadastro? — Magamalabares</title>
+<meta name="description" content="Estima a embalagem, as medidas e o peso do pacote para cadastrar no anúncio da Shopee, a partir do tamanho e do peso do produto.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234a1426'/%3E%3Crect x='3.5' y='3.5' width='57' height='57' fill='none' stroke='%23e6b7a3'/%3E%3Crect x='8.5' y='8.5' width='47' height='47' fill='none' stroke='%23e6b7a3'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Didot,Georgia,serif' font-size='34' fill='%23fbe9e2'%3EM%3C/text%3E%3C/svg%3E">
+<script>
+  /* Aplica o tema salvo antes de desenhar, para não piscar. */
+  try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}
+</script>
+<!-- Fontes da marca. Sem internet, cai no fallback do sistema (ver --mg-fonte-*). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Jost:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Este arquivo funciona sozinho (dois cliques, sem internet).
+   Os tokens abaixo são uma cópia de ../assets/magamalabares.css + estilos do estimador. */
+:root {
+  --mg-fonte-marca: "Italiana", "Didot", "Bodoni 72", "Bodoni MT", Georgia, serif;
+  --mg-fonte-serifa: "Cormorant Garamond", "EB Garamond", Garamond, Georgia, serif;
+  --mg-fonte-texto: "Jost", "Futura", "Century Gothic", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mg-fonte-mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --mg-fundo: #2e0c18; --mg-superficie: #4a1426; --mg-linha: #e6b7a3; --mg-texto: #fbe9e2;
+  --mg-suave: #e0b3a6; --mg-destaque: #f2c4b4; --mg-borda: #8a4a52; --mg-campo: #2e0c18;
+  --mg-nota: #3b1020; --mg-botao-texto: #2e0c18; --mg-positivo: #a6dcb0; --mg-negativo: #ff9e9e;
+  --mg-atencao: #f3d38b;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-tema="noite"]) {
+    --mg-fundo: #fbeef0; --mg-superficie: #fff9f6; --mg-linha: #9b5a6c; --mg-texto: #4a1426;
+    --mg-suave: #8a4a5c; --mg-destaque: #a8274e; --mg-borda: #d9b3bd; --mg-campo: #fffdfb;
+    --mg-nota: #f6dfe3; --mg-botao-texto: #fbeef0; --mg-positivo: #2b7448; --mg-negativo: #b3261e;
+    --mg-atencao: #8a5a00;
+    color-scheme: light;
+  }
+}
+:root[data-tema="dia"] {
+  --mg-fundo: #fbeef0; --mg-superficie: #fff9f6; --mg-linha: #9b5a6c; --mg-texto: #4a1426;
+  --mg-suave: #8a4a5c; --mg-destaque: #a8274e; --mg-borda: #d9b3bd; --mg-campo: #fffdfb;
+  --mg-nota: #f6dfe3; --mg-botao-texto: #fbeef0; --mg-positivo: #2b7448; --mg-negativo: #b3261e;
+  --mg-atencao: #8a5a00;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--mg-fundo); color: var(--mg-texto); font-family: var(--mg-fonte-texto); font-size: 16px; line-height: 1.5; overflow-x: hidden; }
+a { color: var(--mg-destaque); }
+a:hover { color: var(--mg-texto); }
+[hidden] { display: none !important; }
+
+.mg-pagina { max-width: 1120px; margin: 0 auto; padding: 20px 16px 64px; }
+.mg-topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--mg-borda); }
+.mg-marca { font-family: var(--mg-fonte-marca); font-size: 20px; letter-spacing: .06em; color: var(--mg-texto); text-decoration: none; }
+.mg-tema { display: flex; border: 1px solid var(--mg-linha); }
+.mg-tema button { font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; padding: 5px 10px; border: 0; border-radius: 0; background: transparent; color: var(--mg-suave); cursor: pointer; }
+.mg-tema button[aria-pressed="true"] { background: var(--mg-linha); color: var(--mg-botao-texto); }
+
+.mg-rotulo { background: var(--mg-superficie); border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -8px; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+@media (min-width: 640px) { .mg-rotulo { padding: 40px; outline-offset: -10px; } }
+.mg-cabeca { display: flex; flex-direction: column; gap: 6px; }
+.mg-numero { margin: 0; font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .5em; color: var(--mg-suave); text-transform: uppercase; }
+h1 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: clamp(32px, 8vw, 46px); line-height: 1.05; }
+.mg-sub { margin: 0; font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 18px; color: var(--mg-suave); }
+h2 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 26px; line-height: 1.1; }
+
+/* Navegação entre as utilidades */
+.mg-outras { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; font-family: var(--mg-fonte-mono); font-size: 12px; letter-spacing: .06em; color: var(--mg-suave); margin-top: 6px; }
+.mg-outras a { text-decoration: none; }
+.mg-outras a:hover { text-decoration: underline; }
+
+/* Layout */
+.mg-duas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
+@media (min-width: 880px) {
+  .mg-duas { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+}
+.mg-campos { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.mg-grade-campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.mg-coluna-resultado { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+/* Campos */
+.mg-campo { display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 500; min-width: 0; }
+.mg-campo small { font-weight: 400; font-size: 13px; color: var(--mg-suave); }
+.mg-campo input, .mg-campo select { height: 50px; width: 100%; min-width: 0; padding: 0 14px; border: 1px solid var(--mg-borda); border-radius: 2px; background: var(--mg-campo); color: var(--mg-texto); font-family: var(--mg-fonte-texto); font-size: 18px; }
+.mg-campo input::placeholder { color: var(--mg-suave); opacity: .75; }
+.mg-campo input:focus, .mg-campo select:focus, .mg-check input:focus-visible, .mg-segmento input:focus-visible + span, .mg-cat input:focus { outline: 1px solid var(--mg-linha); outline-offset: 2px; }
+.mg-campo input[aria-invalid="true"], .mg-cat input[aria-invalid="true"] { border-color: var(--mg-negativo); }
+.mg-dica { font-weight: 400; font-size: 13px; line-height: 1.5; color: var(--mg-suave); margin: 0; }
+.mg-dica strong { color: var(--mg-texto); font-weight: 600; }
+.mg-grade-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mg-grade-3 .mg-campo input { padding: 0 10px; }
+
+.mg-check { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; line-height: 1.45; cursor: pointer; }
+.mg-check input { appearance: none; -webkit-appearance: none; flex: 0 0 18px; width: 18px; height: 18px; margin: 2px 0 0; border: 1px solid var(--mg-linha); border-radius: 0; background: var(--mg-campo); display: grid; place-content: center; cursor: pointer; }
+.mg-check input:checked::after { content: ""; width: 10px; height: 10px; background: var(--mg-linha); }
+
+.mg-segmento { display: flex; border: 1px solid var(--mg-borda); border-radius: 2px; }
+.mg-segmento label { flex: 1 1 0; min-width: 0; position: relative; cursor: pointer; }
+.mg-segmento label + label { border-left: 1px solid var(--mg-borda); }
+.mg-segmento input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.mg-segmento span { display: block; text-align: center; padding: 12px 2px; font-size: 14px; font-weight: 400; color: var(--mg-suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-segmento input:checked + span { background: var(--mg-linha); color: var(--mg-botao-texto); font-weight: 500; }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+legend { padding: 0; margin-bottom: 8px; font-size: 15px; font-weight: 500; }
+
+.mg-exemplo { display: flex; justify-content: space-between; align-items: center; gap: 10px 14px; flex-wrap: wrap; border: 1px dashed var(--mg-linha); padding: 10px 14px; font-size: 14px; }
+.mg-exemplo .mg-selo { margin-right: 8px; }
+
+/* Botões */
+.mg-botao { background: var(--mg-linha); color: var(--mg-botao-texto); border: 1px solid var(--mg-linha); font-family: var(--mg-fonte-texto); font-size: 15px; font-weight: 500; padding: 12px 22px; border-radius: 2px; cursor: pointer; }
+.mg-botao-sec { background: transparent; color: var(--mg-texto); border: 1px solid var(--mg-linha); font-family: var(--mg-fonte-texto); font-size: 15px; padding: 12px 22px; border-radius: 2px; cursor: pointer; }
+.mg-mini-botao { padding: 7px 14px; font-size: 14px; }
+.mg-botao:focus-visible, .mg-botao-sec:focus-visible, .mg-x:focus-visible { outline: 1px solid var(--mg-texto); outline-offset: 2px; }
+
+/* Resultado */
+.mg-resultado { display: flex; flex-direction: column; border-top: 1px solid var(--mg-borda); padding-top: 4px; }
+.mg-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 6px 0; font-size: 15px; }
+.mg-linha > :first-child { min-width: 0; }
+.mg-linha > :last-child { font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.mg-linha small { display: block; font-size: 12px; color: var(--mg-suave); }
+.mg-linha-total { font-weight: 600; border-top: 1px solid var(--mg-borda); margin-top: 4px; padding-top: 10px; }
+.mg-valor { font-family: var(--mg-fonte-serifa); font-weight: 500; font-size: clamp(40px, 11vw, 56px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--mg-destaque); }
+.mg-vazio { font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 20px; color: var(--mg-suave); padding: 12px 0; }
+.mg-mini-titulo { font-family: var(--mg-fonte-marca); font-size: 12px; letter-spacing: .4em; color: var(--mg-suave); text-transform: uppercase; }
+.mg-sub-titulo { margin: 14px 0 2px; font-family: var(--mg-fonte-mono); font-weight: 400; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mg-suave); }
+
+/* Cartão principal */
+.mg-rotulo-resultado { border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -6px; padding: 22px 20px; display: flex; flex-direction: column; gap: 4px; }
+.mg-rotulo-resultado.mg-fora { border-color: var(--mg-negativo); outline-color: var(--mg-negativo); }
+.mg-cad-cabeca { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+.mg-cad-linha { display: flex; justify-content: space-between; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; padding: 6px 0; }
+.mg-cad-linha > span:first-child { font-weight: 600; font-size: 15px; }
+.mg-valor-medidas { font-size: clamp(30px, 8.6vw, 44px); }
+.mg-copiar { display: flex; gap: 8px; margin-top: 10px; }
+.mg-copiar input { flex: 1 1 auto; min-width: 0; height: 44px; padding: 0 10px; border: 1px solid var(--mg-borda); border-radius: 2px; background: var(--mg-campo); color: var(--mg-texto); font-family: var(--mg-fonte-mono); font-size: 13px; }
+.mg-copiar .mg-botao { padding: 0 18px; height: 44px; flex: 0 0 auto; }
+.mg-copiado { font-size: 13px; color: var(--mg-positivo); min-height: 1.3em; }
+.mg-embalagem-txt { margin: 4px 0 0; font-family: var(--mg-fonte-serifa); font-style: italic; font-size: 20px; line-height: 1.35; }
+.mg-manda { font-size: 14px; border-top: 1px solid var(--mg-borda); padding-top: 10px; margin-top: 8px; line-height: 1.55; }
+.mg-manda b { font-weight: 600; }
+
+.mg-selo { font-family: var(--mg-fonte-mono); font-size: 10px; letter-spacing: .12em; color: var(--mg-botao-texto); background: var(--mg-linha); padding: 3px 8px; white-space: nowrap; }
+.mg-selo-neg { background: var(--mg-negativo); }
+
+/* Indicadores de limite */
+.mg-ponto { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+.mg-ponto.ok { background: var(--mg-positivo); }
+.mg-ponto.perto { background: var(--mg-atencao); }
+.mg-ponto.excede { background: var(--mg-negativo); }
+.mg-st-ok { color: var(--mg-positivo); }
+.mg-st-perto { color: var(--mg-atencao); }
+.mg-st-excede { color: var(--mg-negativo); }
+
+/* Notas e avisos */
+.mg-nota, .mg-aviso, .mg-alerta, .mg-boa { padding: 16px 18px; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; gap: 6px; }
+.mg-nota { border: 1px solid var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -5px; background: var(--mg-nota); }
+.mg-aviso { border: 1px solid var(--mg-atencao); background: var(--mg-nota); }
+.mg-alerta { border: 1px solid var(--mg-negativo); outline: 1px solid var(--mg-negativo); outline-offset: -5px; background: var(--mg-nota); }
+.mg-boa { border: 1px solid var(--mg-positivo); background: var(--mg-nota); }
+.mg-nota > b, .mg-aviso > b, .mg-alerta > b, .mg-boa > b { font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 12px; letter-spacing: .4em; color: var(--mg-suave); }
+.mg-aviso > b { color: var(--mg-atencao); }
+.mg-alerta > b { color: var(--mg-negativo); }
+.mg-boa > b { color: var(--mg-positivo); }
+.mg-avisos { display: flex; flex-direction: column; gap: 12px; }
+.mg-nota ul { margin: 0; padding-left: 18px; }
+.mg-nota li + li { margin-top: 6px; }
+.mg-letra-miuda { font-size: 12px; line-height: 1.6; color: var(--mg-suave); }
+.mg-letra-miuda ul { margin: 6px 0; padding-left: 18px; }
+.mg-letra-miuda p { margin: 6px 0; }
+
+/* Sanfonas */
+details.mg-sanfona { border: 1px solid var(--mg-borda); min-width: 0; }
+details.mg-sanfona > summary { cursor: pointer; list-style: none; padding: 14px 16px; display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-weight: 500; }
+details.mg-sanfona > summary::-webkit-details-marker { display: none; }
+details.mg-sanfona > summary::after { content: "ABRIR +"; font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; color: var(--mg-destaque); white-space: nowrap; }
+details.mg-sanfona[open] > summary::after { content: "FECHAR −"; }
+details.mg-sanfona > summary:focus-visible { outline: 1px solid var(--mg-linha); outline-offset: -3px; }
+details.mg-sanfona > summary small { display: block; font-weight: 400; font-size: 12px; color: var(--mg-suave); }
+.mg-sanfona-corpo { padding: 4px 16px 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+/* Desenho */
+.mg-desenho { margin: 0; border: 1px solid var(--mg-borda); padding: 10px 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.mg-desenho svg { width: 100%; height: auto; display: block; }
+.mg-desenho figcaption { font-size: 12px; color: var(--mg-suave); text-align: center; }
+.sv-ext { fill: var(--mg-nota); fill-opacity: .55; stroke: none; }
+.sv-aresta { fill: none; stroke: var(--mg-linha); stroke-width: 1.4; stroke-linejoin: round; }
+.sv-aba { fill: var(--mg-nota); stroke: var(--mg-linha); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.sv-cont { fill: var(--mg-destaque); fill-opacity: .28; stroke: var(--mg-destaque); stroke-width: 1.2; stroke-linejoin: round; }
+.sv-cont.sv-topo { fill-opacity: .4; }
+.sv-cont.sv-lado { fill-opacity: .18; }
+.sv-grade { stroke: var(--mg-destaque); stroke-width: .8; stroke-dasharray: 3 2; }
+.sv-txt { fill: var(--mg-texto); font-family: var(--mg-fonte-mono); font-size: 12px; }
+.sv-txt-suave { fill: var(--mg-suave); font-family: var(--mg-fonte-mono); font-size: 11px; }
+
+/* Cartões de comparação */
+.mg-cartoes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+@media (min-width: 640px) { .mg-cartoes { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1040px) { .mg-cartoes.mg-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .mg-cartoes.mg-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.mg-cartao { border: 1px solid var(--mg-borda); padding: 18px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mg-cartao.mg-melhor { border-color: var(--mg-linha); outline: 1px solid var(--mg-linha); outline-offset: -6px; }
+.mg-cartao-cabeca { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 2px; }
+.mg-cartao-cabeca h3 { margin: 0; font-family: var(--mg-fonte-marca); font-weight: 400; font-size: 22px; line-height: 1.15; }
+.mg-quando { font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .06em; color: var(--mg-suave); text-transform: uppercase; }
+.mg-fora-lista { margin: 0; padding-left: 18px; font-size: 14px; color: var(--mg-suave); }
+.mg-fora-lista li + li { margin-top: 4px; }
+.mg-fora-lista b { color: var(--mg-texto); font-weight: 500; }
+
+/* Catálogos */
+.mg-cat { display: flex; flex-direction: column; gap: 22px; }
+.mg-cat-bloco { display: flex; flex-direction: column; gap: 8px; }
+.mg-cat-titulo { margin: 0; font-size: 15px; font-weight: 600; }
+.mg-cat-titulo small { font-weight: 400; font-size: 12px; color: var(--mg-suave); }
+.mg-cat-linha, .mg-cat-cab { display: grid; gap: 6px; align-items: center; }
+.mg-cat-caixa { grid-template-columns: repeat(3, minmax(0, 1fr)) 40px; }
+.mg-cat-caixa > :first-child { grid-column: 1 / -1; }
+@media (min-width: 520px) { .mg-cat-caixa { grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) 40px; } .mg-cat-caixa > :first-child { grid-column: auto; } }
+.mg-cat-env { grid-template-columns: repeat(3, minmax(0, 1fr)) 40px; }
+.mg-cat-cab { font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .06em; color: var(--mg-suave); }
+.mg-cat-linha { padding-bottom: 8px; border-bottom: 1px dotted var(--mg-borda); }
+.mg-cat input { height: 40px; width: 100%; min-width: 0; padding: 0 8px; border: 1px solid var(--mg-borda); border-radius: 2px; background: var(--mg-campo); color: var(--mg-texto); font-family: var(--mg-fonte-texto); font-size: 16px; }
+.mg-x { height: 40px; width: 40px; border: 1px solid var(--mg-borda); background: transparent; color: var(--mg-suave); font-size: 16px; cursor: pointer; border-radius: 2px; }
+.mg-x:hover { color: var(--mg-negativo); border-color: var(--mg-negativo); }
+.mg-cat-acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.mg-confirmar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; border: 1px solid var(--mg-negativo); padding: 10px 12px; }
+
+.mg-etiquetas { display: flex; gap: 8px; flex-wrap: wrap; }
+.mg-etiqueta { border: 1px solid var(--mg-borda); color: var(--mg-suave); font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .1em; padding: 4px 10px; }
+</style>
+</head>
+<body>
+<div class="mg-pagina">
+  <header class="mg-topo">
+    <a class="mg-marca" href="../">Magamalabares</a>
+    <div class="mg-tema" role="group" aria-label="Tema">
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
+      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+    </div>
+  </header>
+
+  <main class="mg-rotulo">
+    <div class="mg-cabeca">
+      <p class="mg-numero">Nº 2 · Magamalabares</p>
+      <h1>Qual embalagem eu cadastro?</h1>
+      <p class="mg-sub">peso e medidas do pacote para o anúncio, antes de ter a caixa · regras de nov/2026</p>
+      <nav class="mg-outras" aria-label="Outras utilidades">
+        <span>Também:</span><a href="index.html">Nº 1 · Quanto eu ganho vendendo? →</a>
+      </nav>
+    </div>
+
+    <div class="mg-duas">
+      <!-- ===================== ENTRADAS ===================== -->
+      <div class="mg-campos">
+        <div class="mg-exemplo" id="e-exemplo" hidden>
+          <span><span class="mg-selo">EXEMPLO</span>Troque pelos dados do seu produto.</span>
+          <button type="button" class="mg-botao-sec mg-mini-botao" id="e-limpar">Limpar campos</button>
+        </div>
+
+        <fieldset>
+          <legend>Medidas de uma unidade do produto (cm)</legend>
+          <div class="mg-grade-3">
+            <label class="mg-campo">Compr.<input id="e-c" data-salvar data-produto inputmode="decimal" autocomplete="off" placeholder="15"></label>
+            <label class="mg-campo">Largura<input id="e-l" data-salvar data-produto inputmode="decimal" autocomplete="off" placeholder="10"></label>
+            <label class="mg-campo">Altura<input id="e-a" data-salvar data-produto inputmode="decimal" autocomplete="off" placeholder="5"></label>
+          </div>
+          <p class="mg-dica">Em qualquer ordem: o programa testa as posições.</p>
+        </fieldset>
+
+        <div class="mg-grade-campos">
+          <label class="mg-campo">Peso de uma unidade (g)
+            <input id="e-peso" data-salvar data-produto inputmode="decimal" autocomplete="off" placeholder="300">
+          </label>
+          <label class="mg-campo">Unidades no pacote
+            <input id="e-qtd" data-salvar data-produto inputmode="numeric" autocomplete="off" placeholder="1" value="1">
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>Tipo de produto</legend>
+          <div class="mg-segmento">
+            <label><input type="radio" name="e-tipo" value="rigido" data-salvar data-produto checked><span>Rígido</span></label>
+            <label><input type="radio" name="e-tipo" value="flexivel" data-salvar data-produto><span>Flexível</span></label>
+            <label><input type="radio" name="e-tipo" value="plano" data-salvar data-produto><span>Plano/fino</span></label>
+          </div>
+          <p class="mg-dica" id="e-tipo-dica"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Proteção necessária</legend>
+          <div class="mg-segmento">
+            <label><input type="radio" name="e-protecao" value="nenhuma" data-salvar data-produto><span>Nenhuma</span></label>
+            <label><input type="radio" name="e-protecao" value="leve" data-salvar data-produto><span>Leve</span></label>
+            <label><input type="radio" name="e-protecao" value="media" data-salvar data-produto checked><span>Média</span></label>
+            <label><input type="radio" name="e-protecao" value="alta" data-salvar data-produto><span>Alta</span></label>
+          </div>
+          <p class="mg-dica" id="e-protecao-dica"></p>
+        </fieldset>
+
+        <label class="mg-check">
+          <input type="checkbox" id="e-fabricante" data-salvar data-produto>
+          <span>O produto já vem na caixa do fabricante <span class="mg-dica">(as medidas acima são as dessa caixa; proteção mínima: leve)</span></span>
+        </label>
+
+        <details class="mg-sanfona" id="e-pref-sanfona">
+          <summary><span>Preferências <small id="e-pref-resumo"></small></span></summary>
+          <div class="mg-sanfona-corpo">
+            <label class="mg-campo">Tipo de embalagem
+              <select id="e-embalagem" data-salvar>
+                <option value="auto">Automático (recomendado)</option>
+                <option value="plastico">Envelope plástico</option>
+                <option value="bolha">Envelope com bolha</option>
+                <option value="caixa">Caixa sob medida</option>
+                <option value="catalogo">Caixa do meu catálogo</option>
+              </select>
+            </label>
+            <label class="mg-campo">Onda do papelão
+              <select id="e-onda" data-salvar>
+                <option value="auto">Automático</option>
+                <option value="B">B (0,3 cm)</option>
+                <option value="C">C (0,4 cm)</option>
+                <option value="BC">BC (0,7 cm, dupla)</option>
+              </select>
+            </label>
+            <fieldset>
+              <legend>Margem de segurança no peso</legend>
+              <div class="mg-grade-campos">
+                <label class="mg-campo">Percentual (%)<input id="e-margem-pct" data-salvar inputmode="decimal" autocomplete="off" placeholder="10"></label>
+                <label class="mg-campo">Mínimo (g)<input id="e-margem-min" data-salvar inputmode="decimal" autocomplete="off" placeholder="50"></label>
+              </div>
+              <p class="mg-dica">Vale o maior dos dois. Em branco: 10% ou 50 g.</p>
+            </fieldset>
+            <label class="mg-campo">Modalidade de envio <small>(para conferir os limites)</small>
+              <select id="e-modalidade" data-salvar>
+                <option value="correios">Correios (Shopee)</option>
+                <option value="agencia">Agência Shopee</option>
+                <option value="mini">Mini Envios (Correios)</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
+        <details class="mg-sanfona" id="e-cat-sanfona">
+          <summary><span>Minhas embalagens <small>catálogo de caixas e envelopes</small></span></summary>
+          <div class="mg-sanfona-corpo">
+            <p class="mg-dica">Coloque as embalagens que você realmente comprar. Fica salvo neste navegador.</p>
+            <div id="cat" class="mg-cat"></div>
+          </div>
+        </details>
+      </div>
+
+      <!-- ===================== RESULTADO ===================== -->
+      <div class="mg-coluna-resultado">
+        <div id="r-principal" aria-live="polite"></div>
+        <div id="r-avisos" class="mg-avisos"></div>
+        <figure class="mg-desenho" id="r-desenho-caixa" hidden>
+          <div id="r-desenho"></div>
+          <figcaption>Desenho aproximado: o conteúdo (destacado) dentro da embalagem.</figcaption>
+        </figure>
+        <details class="mg-sanfona" id="r-detalhe-sanfona">
+          <summary>Detalhamento da conta</summary>
+          <div class="mg-sanfona-corpo" id="r-detalhe"></div>
+        </details>
+      </div>
+    </div>
+
+    <section class="mg-campos" aria-labelledby="t-opcoes" id="r-opcoes-secao">
+      <h2 id="t-opcoes">Comparação das opções</h2>
+      <div id="r-opcoes"></div>
+    </section>
+
+    <aside class="mg-nota">
+      <b>ANTES DE VENDER</b>
+      <ul>
+        <li>Estes valores são <strong>estimativas</strong>. Quando tiver a embalagem, monte um pacote de teste, pese e meça (balança de cozinha e fita métrica) e corrija o anúncio, de preferência antes da primeira venda.</li>
+        <li>Meça a embalagem <strong>por fora, já fechada</strong>. Pese com tudo: produto, proteção, fita e etiqueta.</li>
+        <li>Não sei se a Shopee deixa corrigir o peso de um pedido já feito. Confirme na Central do Vendedor.</li>
+      </ul>
+    </aside>
+
+    <div class="mg-letra-miuda">
+      <b>Por que acertar antes</b>
+      <ul>
+        <li>Desde 02/02/2026 a Shopee confere peso e medidas eletronicamente. Pacote maior ou mais pesado que o cadastrado: a diferença de frete sai do seu saldo.</li>
+        <li>Pacote acima do limite da modalidade: R$ 50,00 por pedido. Se repetir: remoção do anúncio, código de violação, cancelamento e até congelamento da conta.</li>
+        <li>Pacote menor que o cadastrado: sem multa conhecida, mas o frete fica mais caro do que precisava.</li>
+        <li>O pedido usa os dados do anúncio no momento da compra.</li>
+      </ul>
+      <b>Como a conta é feita</b>
+      <p>Conteúdo → folga de proteção (0,5 / 1 / 2 / 4 cm por lado) → parede do papelão (onda B 0,3 cm, C 0,4 cm, BC 0,7 cm) → medidas externas → arredonda para cima → mínimo de 16 × 11 × 2 cm → peso da embalagem (área da caixa de abas × gramatura de 520 / 620 / 1000 g/m², plástico bolha de 45 g/m² por camada, fita e etiqueta 15 g na caixa e 5 g no envelope) → margem (10% ou 50 g, o maior, em múltiplos de 10 g) → peso cúbico (C × L × A ÷ 6000) → vale o maior → limites da modalidade.</p>
+      <p>Todos os números são estimativas e ficam no começo do bloco <code>&lt;script id="regras"&gt;</code> deste arquivo. As fontes divergem sobre o tamanho mínimo do pacote (13 × 8 × 1, 15 × 10 × 1 ou 16 × 11 × 2 cm); usei 16 × 11 × 2, o mais conservador.</p>
+    </div>
+
+    <div class="mg-etiquetas" aria-hidden="true">
+      <span class="mg-etiqueta">Nº 2</span><span class="mg-etiqueta">EMBALAGEM</span><span class="mg-etiqueta">ESTIMADOR</span>
+    </div>
+  </main>
+</div>
+
+<!-- ============================================================
+     REGRAS DA EMBALAGEM (funções puras, sem DOM).
+     O arquivo test-embalagem.js carrega só este bloco para conferir os valores.
+     Para ajustar, edite as constantes do topo.
+     ============================================================ -->
+<script id="regras">
+var REGRAS_ATUALIZADAS_EM = "nov/2026";
+
+/* ------------------------------------------------------------------
+   CONSTANTES · TODAS SÃO ESTIMATIVAS
+   Valores definidos na especificação desta ferramenta (nov/2026), a partir de
+   práticas comuns de embalagem e das regras de envio da Shopee/Correios.
+   Não foram conferidos com fornecedor nem com a Shopee. Troque pelos seus
+   números quando tiver as embalagens reais ou se as regras mudarem.
+   ------------------------------------------------------------------ */
+
+/* Folga por lado (cm) entre o conteúdo e a parede, para plástico bolha ou enchimento,
+   e quantas camadas de plástico bolha vão em volta do conteúdo. */
+var FOLGA = {
+  nenhuma: { cm: 0.5, camadas: 0 },  // não quebra nem amassa (roupa, pelúcia)
+  leve:    { cm: 1.0, camadas: 0 },  // papel ou preenchimento simples
+  media:   { cm: 2.0, camadas: 1 },  // eletrônico, cosmético
+  alta:    { cm: 4.0, camadas: 2 }   // vidro, cerâmica, líquido em vidro
+};
+var NIVEIS = ["nenhuma", "leve", "media", "alta"];
+
+/* Papelão ondulado: espessura da parede (cm) e gramatura (g/m²). Estimativas de fornecedores comuns. */
+var PAREDE = { B: 0.3, C: 0.4, BC: 0.7 };
+var GRAMATURA = { B: 520, C: 620, BC: 1000 };
+/* Onda automática pelo peso total dos produtos (g). Com proteção alta, no mínimo ONDA_MINIMA_ALTA. */
+var ONDA_AUTO = [
+  { ateG: 1000, onda: "B" },
+  { ateG: 5000, onda: "C" },
+  { ateG: Infinity, onda: "BC" }
+];
+var ONDA_MINIMA_ALTA = "C";
+var ORDEM_ONDA = ["B", "C", "BC"];
+
+var BOLHA_G_M2 = 45;                                // plástico bolha, g/m² por camada
+var FITA_ETIQUETA_G = { caixa: 15, envelope: 5 };   // fita adesiva + etiqueta, g
+
+/* Envelopes. Encaixe: largura útil ≥ L + A + sobra e comprimento útil ≥ C + A + sobra
+   (o envelope cheio "perde" medida para acomodar a espessura do conteúdo). */
+var ENVELOPE = {
+  espessura: { plastico: 0.2, bolha: 0.8 },  // cm somados à altura do conteúdo
+  alturaMax: 5,                // conteúdo mais alto que isso não vai em envelope
+  alturaMaxRigidoBolha: 3,     // produto rígido só vai em envelope com bolha até esta altura
+  sobra: 1,                    // cm
+  alturaMin: 2                 // altura mínima cadastrada
+};
+
+/* Catálogos iniciais (editáveis na página; as mudanças ficam salvas no navegador). */
+/* Caixas: medidas EXTERNAS, C × L × A em cm. */
+var CATALOGO_CAIXAS = [
+  { nome: "Pequena",      c: 16,   l: 11, a: 6 },
+  { nome: "Média",        c: 21,   l: 14, a: 7 },
+  { nome: "Média alta",   c: 27,   l: 18, a: 9 },
+  { nome: "Grande",       c: 33.5, l: 27, a: 14 },
+  { nome: "Extra grande", c: 43,   l: 35, a: 15 }
+];
+/* Envelopes: medidas ÚTEIS, largura × comprimento em cm, e peso estimado em g. */
+var CATALOGO_ENVELOPES = {
+  plastico: [
+    { l: 12, c: 18, peso: 3 },
+    { l: 19, c: 25, peso: 5 },
+    { l: 26, c: 36, peso: 8 },
+    { l: 32, c: 40, peso: 12 },
+    { l: 40, c: 50, peso: 18 },
+    { l: 50, c: 60, peso: 25 }
+  ],
+  bolha: [
+    { l: 14, c: 19, peso: 6 },
+    { l: 19, c: 25, peso: 10 },
+    { l: 26, c: 36, peso: 18 },
+    { l: 32, c: 40, peso: 26 }
+  ]
+};
+
+/* Tamanho mínimo do pacote, C × L × A em cm.
+   As fontes divergem (13 × 8 × 1, 15 × 10 × 1, 16 × 11 × 2). Usei 16 × 11 × 2 por ser o mais conservador. */
+var MINIMOS = [16, 11, 2];
+
+/* Limites por modalidade de envio. pesoMaxG em gramas. Mini Envios: o pacote precisa caber em caixaMax. */
+var LIMITES = {
+  correios: { nome: "Correios (Shopee)",      maiorLado: 100, soma: 200, pesoMaxG: 30000, minimos: MINIMOS },
+  agencia:  { nome: "Agência Shopee",         maiorLado: 120, soma: 200, pesoMaxG: 30000, minimos: MINIMOS },
+  mini:     { nome: "Mini Envios (Correios)", caixaMax: [24, 16, 4],    pesoMaxG: 300,   minimos: MINIMOS }
+};
+var PERTO_DO_LIMITE = 0.9;      // aviso amarelo a partir de 90% de qualquer limite (soma 180 cm, peso 27 kg…)
+var MULTA_FORA_PADRAO = 50;     // R$ por pedido fora do padrão (Shopee)
+
+/* Margem de segurança no peso: max(pct × total, minG), arredondado para cima em múltiplos de multiploG. */
+var MARGEM = { pct: 0.10, minG: 50, multiploG: 10 };
+
+/* Peso cúbico (g) = C × L × A (cm) ÷ FATOR_CUBAGEM × 1000. 6000 é o padrão dos Correios e da Shopee. */
+var FATOR_CUBAGEM = 6000;
+/* Algumas transportadoras só aplicam a cubagem acima de certo peso ou tamanho. CONFIRA a sua.
+   Peso cúbico menor ou igual a este limiar (kg) é ignorado. 0 = sempre aplicar. */
+var LIMIAR_CUBAGEM_KG = 0;
+
+/* Dica de "caixa padrão muito maior": quando o peso cúbico dela passa a sob medida em mais de 50%. */
+var CAIXA_PADRAO_EXCESSO = 0.5;
+
+var EPS = 1e-9;
+
+/* ------------------------------------------------------------------
+   AJUDANTES
+   ------------------------------------------------------------------ */
+
+/* Lê um número digitado: aceita vírgula ou ponto ("33,5" = "33.5"). Vazio ou inválido → NaN. */
+function lerNumero(txt) {
+  if (txt == null) return NaN;
+  if (typeof txt === "number") return txt;
+  var s = String(txt).replace(/\s|cm|kg|g/gi, "");
+  if (s === "") return NaN;
+  var v = s.lastIndexOf(","), p = s.lastIndexOf(".");
+  if (v > -1 && p > -1) {
+    s = v > p ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  } else if (v > -1) {
+    s = s.replace(",", ".");
+  }
+  if (!/^-?\d*\.?\d+$|^-?\d+\.$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+
+function ordenar(m) { return m.slice().sort(function (x, y) { return y - x; }); }
+/* Arredonda para cima ignorando ruído de ponto flutuante (19,6000001 → 20; 16,0000001 → 16). */
+function cima(v) { return Math.ceil(v - 1e-6); }
+function soma3(m) { return m[0] + m[1] + m[2]; }
+function produto3(m) { return m[0] * m[1] * m[2]; }
+function superficie(b) { return 2 * (b[0] * b[1] + b[0] * b[2] + b[1] * b[2]); }
+function mesclar(a, b) { var o = {}, k; for (k in a) o[k] = a[k]; for (k in b) o[k] = b[k]; return o; }
+
+function fmtNum(v, casas) { return (+v).toLocaleString("pt-BR", { maximumFractionDigits: casas == null ? 1 : casas }); }
+function fmtMed(m) { return m.map(function (x) { return fmtNum(x); }).join(" × ") + " cm"; }
+function fmtG(v) {
+  var r = cima(v);
+  var s = r.toLocaleString("pt-BR") + " g";
+  return r >= 1000 ? s + " (" + fmtNum(r / 1000, 3) + " kg)" : s;
+}
+
+/* Junta e confere a entrada. Aceita a forma "crua" vinda da página ou dos testes:
+   { dims:[c,l,a], pesoUn, qtd, tipo, protecao, fabricante, embalagem, onda,
+     margemPct (fração, 0.10), margemMinG, modalidade, caixas, envelopes } */
+function normalizar(e) {
+  if (e && e._norm) return e;
+  e = e || {};
+  var n = { _norm: true, bruto: e };
+  n.dims = ordenar((e.dims || [0, 0, 0]).map(function (x) { return +lerNumero(x) || 0; }));
+  n.pesoUn = +lerNumero(e.pesoUn) || 0;
+  n.qtd = Math.max(1, Math.floor(+e.qtd || 1));
+  n.pesoProdutos = n.pesoUn * n.qtd;
+  n.tipo = ["rigido", "flexivel", "plano"].indexOf(e.tipo) >= 0 ? e.tipo : "rigido";
+  var prot = NIVEIS.indexOf(e.protecao) >= 0 ? e.protecao : "media";
+  n.protecaoInformada = prot;
+  n.fabricante = !!e.fabricante;
+  if (n.fabricante && NIVEIS.indexOf(prot) < NIVEIS.indexOf("leve")) prot = "leve";
+  n.protecao = prot;
+  n.embalagem = ["auto", "plastico", "bolha", "caixa", "catalogo"].indexOf(e.embalagem) >= 0 ? e.embalagem : "auto";
+  n.onda = PAREDE[e.onda] ? e.onda : "auto";
+  var pct = e.margemPct != null ? +e.margemPct : NaN, min = e.margemMinG != null ? +e.margemMinG : NaN;
+  n.margem = {
+    pct: isFinite(pct) && pct >= 0 ? pct : MARGEM.pct,
+    minG: isFinite(min) && min >= 0 ? min : MARGEM.minG,
+    multiploG: MARGEM.multiploG
+  };
+  n.modalidade = LIMITES[e.modalidade] ? e.modalidade : "correios";
+  n.caixas = (Array.isArray(e.caixas) ? e.caixas : CATALOGO_CAIXAS).filter(function (x) {
+    return x && +x.c > 0 && +x.l > 0 && +x.a > 0;
+  });
+  var env = e.envelopes || CATALOGO_ENVELOPES;
+  n.envelopes = {};
+  ["plastico", "bolha"].forEach(function (t) {
+    n.envelopes[t] = (env[t] || []).filter(function (x) { return x && +x.l > 0 && +x.c > 0 && +x.peso >= 0; });
+  });
+  n.fator = +e.fator > 0 ? +e.fator : FATOR_CUBAGEM;
+  n.limiarKg = e.limiarKg != null && isFinite(+e.limiarKg) ? +e.limiarKg : LIMIAR_CUBAGEM_KG;
+  return n;
+}
+
+function ondaAutomatica(pesoProdutosG, protecao) {
+  var onda = "BC";
+  for (var i = 0; i < ONDA_AUTO.length; i++) {
+    if (pesoProdutosG <= ONDA_AUTO[i].ateG) { onda = ONDA_AUTO[i].onda; break; }
+  }
+  if (protecao === "alta" && ORDEM_ONDA.indexOf(onda) < ORDEM_ONDA.indexOf(ONDA_MINIMA_ALTA)) onda = ONDA_MINIMA_ALTA;
+  return onda;
+}
+function ondaDe(n) { return n.onda !== "auto" ? n.onda : ondaAutomatica(n.pesoProdutos, n.protecao); }
+
+/* Cada medida fica no mínimo MINIMOS (comparando as listas ordenadas). */
+function aplicarMinimos(m) {
+  var s = ordenar(m), aplicado = false;
+  var r = s.map(function (x, i) {
+    if (x < MINIMOS[i] - EPS) { aplicado = true; return MINIMOS[i]; }
+    return x;
+  });
+  return { medidas: ordenar(r), aplicado: aplicado };
+}
+
+/* Área da caixa normal de abas (cm²), com as medidas externas ordenadas C ≥ L ≥ A. */
+function areaCaixa(ext) { var m = ordenar(ext); return (2 * (m[0] + m[1]) + 3.5) * (m[2] + m[1]); }
+function pesoCaixa(ext, onda) { return areaCaixa(ext) / 10000 * GRAMATURA[onda]; }
+function pesoBolha(bloco, camadas) { return superficie(bloco) / 10000 * camadas * BOLHA_G_M2; }
+
+/* ------------------------------------------------------------------
+   FUNÇÕES PRINCIPAIS
+   ------------------------------------------------------------------ */
+
+/* Peso cúbico em gramas (sem arredondar). */
+function pesoCubico(c, l, a, fator) { return c * l * a * 1000 / (fator || FATOR_CUBAGEM); }
+
+/* Todos os arranjos em grade nx × ny × nz = q, nas 6 rotações do produto.
+   Cada um: { bloco:[C,L,A] ordenado, grade:[n por eixo do bloco], item:[medida do produto em cada eixo] }.
+   Blocos repetidos são removidos. */
+var ROTACOES = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+function divisores(q) { var d = []; for (var i = 1; i <= q; i++) if (q % i === 0) d.push(i); return d; }
+function arranjos(dims, q) {
+  var d = ordenar(dims);
+  q = Math.max(1, Math.floor(+q || 1));
+  var lista = [], vistos = {};
+  divisores(q).forEach(function (nx) {
+    divisores(q / nx).forEach(function (ny) {
+      var nz = q / nx / ny;
+      ROTACOES.forEach(function (r) {
+        var item = [d[r[0]], d[r[1]], d[r[2]]], grade = [nx, ny, nz];
+        var bloco = [nx * item[0], ny * item[1], nz * item[2]];
+        var idx = [0, 1, 2].sort(function (i, j) { return bloco[j] - bloco[i]; });
+        var a = {
+          bloco: idx.map(function (i) { return bloco[i]; }),
+          grade: idx.map(function (i) { return grade[i]; }),
+          item: idx.map(function (i) { return item[i]; })
+        };
+        var chave = a.bloco.map(function (x) { return x.toFixed(4); }).join("x");
+        if (!vistos[chave]) { vistos[chave] = true; lista.push(a); }
+      });
+    });
+  });
+  return lista;
+}
+
+/* Fecha os pesos de uma opção: total, margem, peso para cadastrar, peso cúbico, considerado e limites. */
+function completar(o, n) {
+  var p = o.pesos;
+  p.total = p.produtos + p.embalagem + p.bolha + p.fita;
+  p.margem = Math.max(p.total * n.margem.pct, n.margem.minG);
+  var mult = n.margem.multiploG || 10;
+  p.cadastrar = Math.ceil((p.total + p.margem) / mult - EPS) * mult;
+  o.cubicoExato = pesoCubico(o.cadastrar[0], o.cadastrar[1], o.cadastrar[2], n.fator);
+  o.cubico = cima(o.cubicoExato);
+  o.cubicoConta = o.cubicoExato > n.limiarKg * 1000 + EPS;
+  o.considerado = cima(Math.max(p.cadastrar, o.cubicoConta ? o.cubicoExato : 0));
+  o.manda = o.cubicoConta && o.cubicoExato > p.cadastrar + EPS ? "tamanho" : "peso";
+  o.limites = validarLimites(o.cadastrar, p.cadastrar, n.modalidade);
+  o.serve = true;
+  return o;
+}
+function naoServe(base, motivo) { return mesclar(base, { serve: false, motivo: motivo }); }
+
+function textoProtecao(camadas, protecao) {
+  if (camadas > 0) return "com " + camadas + (camadas > 1 ? " camadas" : " camada") + " de plástico bolha";
+  if (protecao === "leve") return "com papel ou preenchimento simples";
+  return "";
+}
+function juntar(partes) { return partes.filter(Boolean).join(", "); }
+
+/* Caixa sob medida.
+   op.folgaNivel: usa a folga de outro nível (para a dica de embalagem menor).
+   op.criterio: "volume" (padrão: menor volume externo, empate pela menor soma) ou "considerado". */
+function estimarCaixa(e, op) {
+  var n = normalizar(e);
+  op = op || {};
+  var nivel = FOLGA[op.folgaNivel] ? op.folgaNivel : n.protecao;
+  var onda = ondaDe(n), parede = PAREDE[onda], folga = FOLGA[nivel].cm, camadas = FOLGA[n.protecao].camadas;
+
+  var cands = arranjos(n.dims, n.qtd).map(function (arr) {
+    var comFolga = arr.bloco.map(function (x) { return x + 2 * folga; });
+    var ext = comFolga.map(function (x) { return x + 2 * parede; });
+    var min = aplicarMinimos(ext);
+    var o = {
+      tipo: "caixa", ordem: 3, rotulo: "Caixa sob medida", nome: "Caixa sob medida",
+      onda: onda, parede: parede, folga: folga, folgaNivel: nivel, camadas: camadas,
+      arranjo: arr, conteudo: arr.bloco, comFolga: comFolga, externas: ext,
+      externasFinais: min.medidas, minimoAplicado: min.aplicado,
+      cadastrar: min.medidas.map(cima),
+      volume: produto3(ext), soma: soma3(ext),
+      pesos: {
+        produtos: n.pesoProdutos,
+        embalagem: pesoCaixa(min.medidas, onda),   // com as medidas já aumentadas pelo mínimo
+        bolha: pesoBolha(arr.bloco, camadas),
+        fita: FITA_ETIQUETA_G.caixa
+      }
+    };
+    return completar(o, n);
+  });
+
+  cands.sort(op.criterio === "considerado"
+    ? function (a, b) { return a.considerado - b.considerado || a.volume - b.volume; }
+    : function (a, b) { return Math.abs(a.volume - b.volume) > 1e-6 ? a.volume - b.volume : a.soma - b.soma; });
+  var o = cands[0];
+  o.descricao = juntar(["Caixa sob medida", "papelão onda " + onda, textoProtecao(camadas, n.protecao)]);
+  return o;
+}
+
+/* Envelope plástico ("plastico") ou com plástico bolha ("bolha").
+   Para cada arranjo pega o menor envelope do catálogo que serve; entre os arranjos fica o de
+   menor peso considerado (empate: menor área do envelope). */
+function estimarEnvelope(e, tipo) {
+  var n = normalizar(e);
+  tipo = tipo === "bolha" ? "bolha" : "plastico";
+  var base = {
+    tipo: tipo, ordem: tipo === "plastico" ? 0 : 1,
+    rotulo: tipo === "bolha" ? "Envelope com bolha" : "Envelope plástico",
+    nome: tipo === "bolha" ? "Envelope com bolha" : "Envelope plástico"
+  };
+  if (n.protecao === "alta") return naoServe(base, "Produto frágil (proteção alta) nunca vai em envelope.");
+  if (tipo === "plastico" && n.protecao !== "nenhuma") return naoServe(base, "Envelope plástico só para o que não quebra nem amassa (proteção nenhuma).");
+  if (tipo === "bolha" && n.protecao === "nenhuma") return naoServe(base, "Sem necessidade de proteção, o envelope plástico simples basta.");
+
+  var lista = n.envelopes[tipo].slice().sort(function (a, b) { return a.l * a.c - b.l * b.c || a.peso - b.peso; });
+  if (!lista.length) return naoServe(base, "O catálogo de " + base.rotulo.toLowerCase() + " está vazio.");
+  var camadas = FOLGA[n.protecao].camadas, esp = ENVELOPE.espessura[tipo];
+  var melhor = null, candidatos = [], algumBaixo = false, algumAlto = false, algumRigidoOk = false;
+
+  arranjos(n.dims, n.qtd).forEach(function (arr) {
+    var C = arr.bloco[0], L = arr.bloco[1], A = arr.bloco[2];
+    if (A > ENVELOPE.alturaMax + EPS) { algumAlto = true; return; }
+    algumBaixo = true;
+    if (tipo === "bolha" && n.tipo === "rigido" && A > ENVELOPE.alturaMaxRigidoBolha + EPS) return;
+    algumRigidoOk = true;
+    var precisaL = L + A + ENVELOPE.sobra, precisaC = C + A + ENVELOPE.sobra;
+    var env = null;
+    for (var i = 0; i < lista.length; i++) {
+      var v = lista[i], vl = +v.l, vc = +v.c;
+      if ((vl >= precisaL - EPS && vc >= precisaC - EPS) || (vc >= precisaL - EPS && vl >= precisaC - EPS)) { env = v; break; }
+    }
+    if (!env) return;
+    var altura = Math.max(ENVELOPE.alturaMin, cima(A + esp));
+    var min = aplicarMinimos([Math.max(+env.c, +env.l), Math.min(+env.c, +env.l), altura]);
+    var o = mesclar(base, {
+      envelope: env, arranjo: arr, conteudo: arr.bloco, precisa: { l: precisaL, c: precisaC },
+      camadas: camadas, espessura: esp, minimoAplicado: min.aplicado,
+      cadastrar: min.medidas.map(cima), area: +env.l * +env.c,
+      pesos: { produtos: n.pesoProdutos, embalagem: +env.peso, bolha: pesoBolha(arr.bloco, camadas), fita: FITA_ETIQUETA_G.envelope }
+    });
+    completar(o, n);
+    candidatos.push({ cadastrar: o.cadastrar, considerado: o.considerado, bloco: arr.bloco });
+    if (!melhor || o.considerado < melhor.considerado || (o.considerado === melhor.considerado && o.area < melhor.area)) melhor = o;
+  });
+
+  if (melhor) {
+    melhor.candidatos = candidatos;
+    melhor.descricao = juntar([
+      (tipo === "bolha" ? "Envelope com plástico bolha " : "Envelope plástico de segurança ") + fmtNum(melhor.envelope.l) + " × " + fmtNum(melhor.envelope.c) + " cm",
+      camadas > 0 ? "mais " + textoProtecao(camadas, n.protecao) + " no produto" : ""
+    ]);
+    return melhor;
+  }
+  if (!algumBaixo) return naoServe(base, "O conteúdo passa de " + ENVELOPE.alturaMax + " cm de altura em qualquer arrumação. Use caixa.");
+  if (!algumRigidoOk) return naoServe(base, "Produto rígido com mais de " + ENVELOPE.alturaMaxRigidoBolha + " cm de altura não vai em envelope com bolha. Use caixa.");
+  return naoServe(base, "Nenhum envelope do catálogo serve" +
+    (n.qtd > 1 && algumAlto ? " (empilhado passa de " + ENVELOPE.alturaMax + " cm e lado a lado não cabe)" : " (o conteúdo é grande demais)") + ". Use caixa.");
+}
+
+/* Melhor caixa do catálogo (medidas externas). Medida interna = externa − 2 × parede da onda escolhida.
+   Serve se cada medida interna ≥ conteúdo + 2 × folga (listas ordenadas), em algum arranjo.
+   Fica a de menor peso considerado (empate: menor volume). */
+function escolherCaixaPadrao(e) {
+  var n = normalizar(e);
+  var base = { tipo: "catalogo", ordem: 2, rotulo: "Caixa do catálogo", nome: "Caixa do catálogo" };
+  if (!n.caixas.length) return naoServe(base, "O catálogo de caixas está vazio.");
+  var onda = ondaDe(n), parede = PAREDE[onda], folga = FOLGA[n.protecao].cm, camadas = FOLGA[n.protecao].camadas;
+  var arrs = arranjos(n.dims, n.qtd).map(function (arr) {
+    return { arr: arr, precisa: arr.bloco.map(function (x) { return x + 2 * folga; }), sup: superficie(arr.bloco) };
+  }).sort(function (a, b) { return a.sup - b.sup; });
+
+  var melhor = null;
+  n.caixas.forEach(function (cx) {
+    var ext = ordenar([+cx.c, +cx.l, +cx.a]);
+    var interna = ext.map(function (x) { return x - 2 * parede; });
+    var fit = null;
+    for (var i = 0; i < arrs.length && !fit; i++) {
+      var p = arrs[i].precisa;
+      if (interna[0] >= p[0] - EPS && interna[1] >= p[1] - EPS && interna[2] >= p[2] - EPS) fit = arrs[i];
+    }
+    if (!fit) return;
+    var min = aplicarMinimos(ext);
+    var o = mesclar(base, {
+      caixa: cx, nome: "Caixa " + cx.nome, onda: onda, parede: parede, folga: folga, camadas: camadas,
+      arranjo: fit.arr, conteudo: fit.arr.bloco, comFolga: fit.precisa, internas: interna,
+      externas: ext, externasFinais: min.medidas, minimoAplicado: min.aplicado,
+      cadastrar: min.medidas.map(cima), volume: produto3(ext),
+      pesos: { produtos: n.pesoProdutos, embalagem: pesoCaixa(ext, onda), bolha: pesoBolha(fit.arr.bloco, camadas), fita: FITA_ETIQUETA_G.caixa }
+    });
+    completar(o, n);
+    if (!melhor || o.considerado < melhor.considerado || (o.considerado === melhor.considerado && o.volume < melhor.volume)) melhor = o;
+  });
+  if (!melhor) return naoServe(base, "Nenhuma caixa do catálogo é grande o bastante por dentro (medida interna = externa − 2 × " + fmtNum(parede) + " cm de parede).");
+  melhor.descricao = juntar(["Caixa " + melhor.caixa.nome + " do catálogo (" + fmtMed(ordenar([+melhor.caixa.c, +melhor.caixa.l, +melhor.caixa.a])) + ")", "papelão onda " + onda, textoProtecao(camadas, n.protecao)]);
+  return melhor;
+}
+
+/* Confere medidas (cm) e peso (g) com os limites da modalidade.
+   status: "ok", "perto" (≥ 90% de algum limite) ou "excede". */
+var GRAVIDADE = { ok: 0, perto: 1, excede: 2 };
+function pior(a, b) { return GRAVIDADE[b] > GRAVIDADE[a] ? b : a; }
+function validarLimites(medidas, pesoG, modalidade) {
+  var lim = LIMITES[modalidade] || LIMITES.correios;
+  var m = ordenar(medidas), itens = [];
+  function st(valor, max) { return valor > max + EPS ? "excede" : valor >= PERTO_DO_LIMITE * max - EPS ? "perto" : "ok"; }
+  if (lim.caixaMax) {
+    var cm = ordenar(lim.caixaMax), s = "ok";
+    for (var i = 0; i < 3; i++) s = pior(s, st(m[i], cm[i]));
+    itens.push({ id: "tamanho", rotulo: "Tamanho", valor: m, limite: cm, unidade: "cm", status: s });
+  } else {
+    itens.push({ id: "maiorLado", rotulo: "Maior lado", valor: m[0], limite: lim.maiorLado, unidade: "cm", status: st(m[0], lim.maiorLado) });
+    if (lim.soma) itens.push({ id: "soma", rotulo: "Soma C + L + A", valor: soma3(m), limite: lim.soma, unidade: "cm", status: st(soma3(m), lim.soma) });
+  }
+  itens.push({ id: "peso", rotulo: "Peso", valor: pesoG, limite: lim.pesoMaxG, unidade: "g", status: st(pesoG, lim.pesoMaxG) });
+  var mins = ordenar(lim.minimos), abaixo = m.some(function (x, i) { return x < mins[i] - EPS; });
+  itens.push({ id: "minimo", rotulo: "Tamanho mínimo", valor: m, limite: mins, unidade: "cm", status: abaixo ? "excede" : "ok", minimo: true });
+  var status = itens.reduce(function (s, it) { return pior(s, it.status); }, "ok");
+  return { modalidade: LIMITES[modalidade] ? modalidade : "correios", nome: lim.nome, status: status, itens: itens };
+}
+
+/* Como as unidades ficam arrumadas, em texto. */
+function descreverArranjo(arr) {
+  var g = arr.grade, total = g[0] * g[1] * g[2];
+  if (total === 1) return "1 unidade";
+  var deitado = arr.item[2] <= Math.min(arr.item[0], arr.item[1]) + EPS ? "deitados" : "em pé";
+  var porCamada = g[0] * g[1], camadas = g[2];
+  var txt = g.join(" × ") + " (C × L × A), ";
+  if (camadas === 1) return txt + deitado + " lado a lado";
+  if (porCamada === 1) return txt + camadas + " " + deitado + " empilhados";
+  return txt + camadas + " camadas de " + porCamada + " " + deitado + " lado a lado";
+}
+
+/* Calcula todas as opções, descarta as que não servem, ordena e monta as dicas.
+   Ordem: menor peso considerado; empate: envelope plástico, envelope bolha, caixa do catálogo, caixa sob medida. */
+function recomendar(e) {
+  var n = normalizar(e);
+  var plastico = estimarEnvelope(n, "plastico"), bolha = estimarEnvelope(n, "bolha");
+  var catalogo = escolherCaixaPadrao(n), caixa = estimarCaixa(n);
+  var todas = [plastico, bolha, catalogo, caixa];
+  var lim = LIMITES[n.modalidade];
+  todas.forEach(function (o) {
+    o.permitida = n.embalagem === "auto" || n.embalagem === o.tipo;
+    o.viavel = !!o.serve && o.limites.status !== "excede";
+    if (o.serve && !o.viavel) o.motivo = "Passa do limite da modalidade " + lim.nome + ".";
+  });
+  function ordem(a, b) { return a.considerado - b.considerado || a.ordem - b.ordem; }
+  var viaveis = todas.filter(function (o) { return o.viavel; }).sort(ordem);
+  var opcoes = viaveis.filter(function (o) { return o.permitida; });
+
+  var r = {
+    entrada: n, todas: todas, plastico: plastico, bolha: bolha, catalogo: catalogo, caixa: caixa,
+    viaveis: viaveis, opcoes: opcoes, recomendada: opcoes[0] || null
+  };
+  r.preferida = n.embalagem === "auto" ? null : todas.filter(function (o) { return o.tipo === n.embalagem; })[0];
+  r.preferidaFalhou = !!r.preferida && !r.recomendada;
+  /* O que vai no cartão principal: a recomendada; se a preferência não serve, a melhor automática;
+     se nada cabe nos limites, a caixa sob medida, marcada como fora do limite. */
+  r.mostrar = r.recomendada || viaveis[0] || caixa;
+  r.foraDoLimite = r.mostrar.limites.status === "excede";
+  r.cabeMini = validarLimites(r.mostrar.cadastrar, r.mostrar.pesos.cadastrar, "mini").status !== "excede";
+  r.dicas = montarDicas(r, n);
+  return r;
+}
+
+function montarDicas(r, n) {
+  var d = [], m = r.mostrar, lim = LIMITES[n.modalidade];
+  if (m.limites.status === "excede") {
+    d.push({ id: "limite", nivel: "alerta", texto: "Este pacote passa do limite desta modalidade (" + lim.nome + "). A Shopee cobra R$ " + MULTA_FORA_PADRAO + " por pedido fora do padrão e pode remover o anúncio." });
+  } else if (m.limites.status === "perto") {
+    d.push({ id: "perto", nivel: "aviso", texto: "O pacote está perto do limite da modalidade " + lim.nome + ". Meça o pacote de verdade antes de vender: se passar, a Shopee cobra R$ " + MULTA_FORA_PADRAO + " por pedido." });
+  }
+  if (r.preferidaFalhou) {
+    d.push({ id: "preferida", nivel: "aviso", texto: r.preferida.rotulo + " não serve: " + r.preferida.motivo + (r.viaveis.length ? " Mostrando a melhor opção automática." : "") });
+  }
+  if (r.cabeMini && n.modalidade !== "mini") {
+    d.push({ id: "mini", nivel: "positivo", texto: "Pode caber no Mini Envios dos Correios, se a modalidade estiver disponível para você." });
+  }
+  if (m.manda === "tamanho") {
+    var t = "O tamanho do pacote está pesando mais que o produto (peso cúbico de " + fmtG(m.cubico) + " contra " + fmtG(m.pesos.cadastrar) + " de peso).";
+    var alt = reducao(n, m);
+    if (alt) t += " Se reduzir a embalagem para " + fmtMed(alt.opcao.cadastrar) + " (" + alt.como + "), o peso considerado cai de " + fmtG(m.considerado) + " para " + fmtG(alt.opcao.considerado) + ".";
+    d.push({ id: "tamanho", nivel: "dica", texto: t, alternativa: alt ? alt.opcao : null });
+  }
+  if (n.qtd > 1) {
+    var um = recomendar(mesclar(n.bruto, { qtd: 1 })).mostrar;
+    d.push({
+      id: "kit", nivel: "dica", unidade: um,
+      texto: "Kit de " + n.qtd + " unidades: " + descreverArranjo(m.arranjo) + ". No kit, o frete considera " + fmtG(m.considerado / n.qtd) +
+        " por unidade (" + fmtG(m.considerado) + " ÷ " + n.qtd + "). Em " + n.qtd + " pacotes separados seriam " + fmtG(um.considerado) +
+        " cada (" + fmtG(um.considerado * n.qtd) + " no total)."
+    });
+  }
+  if (r.catalogo.serve && r.caixa.serve && r.catalogo.cubico > r.caixa.cubico * (1 + CAIXA_PADRAO_EXCESSO)) {
+    d.push({
+      id: "caixaPadrao", nivel: "aviso",
+      texto: "A caixa do catálogo que serve (" + r.catalogo.caixa.nome + ") gera " + fmtG(r.catalogo.cubico) + " de peso cúbico, " +
+        fmtG(r.catalogo.cubico - r.caixa.cubico) + " a mais que a caixa sob medida (" + fmtG(r.caixa.cubico) + "). Vale comprar uma caixa mais perto de " + fmtMed(r.caixa.cadastrar) + "."
+    });
+  }
+  if (r.caixa.minimoAplicado) {
+    var leve = n.protecao === "nenhuma" ? " Envelope plástico costuma ser a opção mais leve." : (n.protecao === "alta" ? "" : " Envelope com bolha costuma ser a opção mais leve.");
+    d.push({ id: "minimo", nivel: "dica", texto: "Seu pacote vai ser cadastrado no tamanho mínimo aceito (" + fmtMed(MINIMOS) + ")." + leve });
+  }
+  if (n.fabricante && n.protecaoInformada !== n.protecao) {
+    d.push({ id: "fabricante", nivel: "nota", texto: "Produto na caixa do fabricante: usei proteção leve, a mínima nesse caso." });
+  }
+  if (n.onda !== "auto") {
+    var auto = ondaAutomatica(n.pesoProdutos, n.protecao);
+    if (ORDEM_ONDA.indexOf(n.onda) < ORDEM_ONDA.indexOf(auto)) {
+      d.push({ id: "onda", nivel: "aviso", texto: "Você escolheu papelão onda " + n.onda + ", mais fino que o recomendado (" + auto + ") para este peso e proteção." });
+    }
+  }
+  if (n.protecao === "alta") {
+    d.push({ id: "fragil", nivel: "aviso", texto: "Produto frágil: escreva FRÁGIL na embalagem e preencha todos os espaços vazios. Nenhuma embalagem garante contra quebra." });
+  }
+  return d;
+}
+
+/* Procura uma embalagem menor quando o tamanho manda no frete:
+   caixa sob medida com outra arrumação ou, se a proteção permitir, com a folga de um nível abaixo. */
+function reducao(n, m) {
+  var tentativas = [];
+  var c1 = estimarCaixa(n, { criterio: "considerado" });
+  tentativas.push({
+    opcao: c1,
+    como: m.tipo === "caixa" ? "arrumando as unidades assim: " + descreverArranjo(c1.arranjo) : "caixa sob medida"
+  });
+  if (n.protecao === "leve" || n.protecao === "media") {
+    var abaixo = NIVEIS[NIVEIS.indexOf(n.protecao) - 1];
+    var c2 = estimarCaixa(n, { criterio: "considerado", folgaNivel: abaixo });
+    tentativas.push({
+      opcao: c2,
+      como: (m.tipo === "caixa" ? "" : "caixa sob medida com ") + "folga de " + fmtNum(FOLGA[abaixo].cm) + " cm por lado em vez de " + fmtNum(FOLGA[n.protecao].cm) + " cm, mais justa"
+    });
+  }
+  var melhor = null;
+  tentativas.forEach(function (t) {
+    if (t.opcao.limites.status === "excede" || t.opcao.considerado >= m.considerado) return;
+    if (!melhor || t.opcao.considerado < melhor.opcao.considerado) melhor = t;
+  });
+  return melhor;
+}
+</script>
+
+<!-- ============================================================
+     INTERFACE
+     ============================================================ -->
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var CHAVE = "mg-embalagem-v1", CHAVE_CAT = "mg-embalagem-catalogos-v1";
+  var EXEMPLO = { "e-c": "15", "e-l": "10", "e-a": "5", "e-peso": "300", "e-qtd": "1", "e-tipo": "rigido", "e-protecao": "media", "e-fabricante": false };
+  var estado = { exemplo: false, confirmando: false };
+
+  /* ---------- formatação ---------- */
+  function n1(v) { return fmtNum(v, 1); }
+  function med(m) { return fmtMed(m); }
+  function medInt(m) { return m.join(" × ") + " cm"; }
+  function g1(v) { return (+v).toLocaleString("pt-BR", { maximumFractionDigits: 1 }) + " g"; }
+  function gLim(v) { return v >= 1000 ? fmtNum(v / 1000, 3) + " kg" : fmtNum(v, 0) + " g"; }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function linha(rotulo, valor, extra) { return '<div class="mg-linha' + (extra || "") + '"><span>' + rotulo + "</span><span>" + valor + "</span></div>"; }
+  function sub(t) { return '<h3 class="mg-sub-titulo">' + t + "</h3>"; }
+  function num(id) { return lerNumero($(id).value); }
+  function radio(nome) { var r = document.querySelector('input[name="' + nome + '"]:checked'); return r ? r.value : null; }
+
+  /* ---------- tema ---------- */
+  var html = document.documentElement;
+  var midiaDia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
+  function temaEfetivo() {
+    var t = html.getAttribute("data-tema");
+    if (t === "noite" || t === "dia") return t;
+    return midiaDia && midiaDia.matches ? "dia" : "noite";
+  }
+  function marcarTema() {
+    var t = temaEfetivo();
+    document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-tema-opcao") === t));
+    });
+  }
+  document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-tema-opcao");
+      html.setAttribute("data-tema", t);
+      try { localStorage.setItem("mg-tema", t); } catch (e) {}
+      marcarTema();
+    });
+  });
+  if (midiaDia && midiaDia.addEventListener) midiaDia.addEventListener("change", marcarTema);
+  marcarTema();
+
+  /* ---------- memória (localStorage) ---------- */
+  var SANFONAS = ["e-pref-sanfona", "e-cat-sanfona", "r-detalhe-sanfona"];
+  function salvar() {
+    var dados = { exemplo: estado.exemplo };
+    document.querySelectorAll("[data-salvar]").forEach(function (el) {
+      if (el.type === "radio") { if (el.checked) dados[el.name] = el.value; }
+      else if (el.type === "checkbox") dados[el.id] = el.checked;
+      else dados[el.id] = el.value;
+    });
+    SANFONAS.forEach(function (id) { dados[id] = $(id).open; });
+    try { localStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (e) { /* navegador bloqueou */ }
+  }
+  function aplicarValores(dados) {
+    document.querySelectorAll("[data-salvar]").forEach(function (el) {
+      if (el.type === "radio") { if (dados[el.name] != null) el.checked = dados[el.name] === el.value; }
+      else if (el.type === "checkbox") { if (dados[el.id] != null) el.checked = !!dados[el.id]; }
+      else if (typeof dados[el.id] === "string") {
+        if (el.tagName === "SELECT" && !el.querySelector('option[value="' + dados[el.id] + '"]')) return;
+        el.value = dados[el.id];
+      }
+    });
+  }
+  function carregar() {
+    var dados = null;
+    try { dados = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) { dados = null; }
+    if (!dados || typeof dados !== "object") return false;
+    aplicarValores(dados);
+    SANFONAS.forEach(function (id) { if (dados[id]) $(id).open = true; });
+    estado.exemplo = !!dados.exemplo;
+    return true;
+  }
+
+  /* ---------- catálogos ---------- */
+  function copiaProfunda(x) { return JSON.parse(JSON.stringify(x)); }
+  function catalogoPadrao() { return { caixas: copiaProfunda(CATALOGO_CAIXAS), envelopes: copiaProfunda(CATALOGO_ENVELOPES) }; }
+  function carregarCatalogos() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CHAVE_CAT) || "null");
+      if (c && Array.isArray(c.caixas) && c.envelopes && Array.isArray(c.envelopes.plastico) && Array.isArray(c.envelopes.bolha)) return c;
+    } catch (e) {}
+    return catalogoPadrao();
+  }
+  function salvarCatalogos() { try { localStorage.setItem(CHAVE_CAT, JSON.stringify(catalogos)); } catch (e) {} }
+  var catalogos = carregarCatalogos();
+  function listaDe(nome) { return nome === "caixas" ? catalogos.caixas : catalogos.envelopes[nome]; }
+  function numCat(v) { var x = lerNumero(v); return isNaN(x) ? 0 : x; }
+  function caixasNum() {
+    return catalogos.caixas.map(function (c) { return { nome: String(c.nome || "Sem nome"), c: numCat(c.c), l: numCat(c.l), a: numCat(c.a) }; });
+  }
+  function envelopesNum() {
+    var r = {};
+    ["plastico", "bolha"].forEach(function (t) {
+      r[t] = catalogos.envelopes[t].map(function (v) { return { l: numCat(v.l), c: numCat(v.c), peso: lerNumero(v.peso) }; });
+    });
+    return r;
+  }
+  function campoCat(lista, i, chave, valor, rotulo, texto) {
+    var v = typeof valor === "number" ? n1(valor) : (valor == null ? "" : valor);
+    var invalido = !texto && (v === "" || !(lerNumero(v) >= 0) || (chave !== "peso" && !(lerNumero(v) > 0)));
+    return '<input data-lista="' + lista + '" data-i="' + i + '" data-k="' + chave + '" value="' + esc(v) + '" aria-label="' + esc(rotulo) + '"' +
+      (texto ? ' autocomplete="off"' : ' inputmode="decimal" autocomplete="off"') + (invalido ? ' aria-invalid="true"' : "") + ' placeholder="' + esc(rotulo.split(" ")[0]) + '">';
+  }
+  function renderCatalogo() {
+    var h = '<div class="mg-cat-bloco"><h3 class="mg-cat-titulo">Caixas <small>· medidas externas, cm</small></h3>';
+    h += '<div class="mg-cat-cab mg-cat-caixa" aria-hidden="true"><span>Nome</span><span>Compr.</span><span>Largura</span><span>Altura</span><span></span></div>';
+    catalogos.caixas.forEach(function (cx, i) {
+      var nome = cx.nome || "caixa " + (i + 1);
+      h += '<div class="mg-cat-linha mg-cat-caixa">' +
+        campoCat("caixas", i, "nome", cx.nome, "Nome da caixa " + (i + 1), true) +
+        campoCat("caixas", i, "c", cx.c, "Comprimento externo de " + nome) +
+        campoCat("caixas", i, "l", cx.l, "Largura externa de " + nome) +
+        campoCat("caixas", i, "a", cx.a, "Altura externa de " + nome) +
+        '<button type="button" class="mg-x" data-apagar="caixas" data-i="' + i + '" aria-label="Apagar ' + esc(nome) + '">✕</button></div>';
+    });
+    h += '<div class="mg-cat-acoes"><button type="button" class="mg-botao-sec mg-mini-botao" data-adicionar="caixas">+ Adicionar caixa</button></div></div>';
+
+    [["plastico", "Envelopes plásticos de segurança"], ["bolha", "Envelopes com plástico bolha"]].forEach(function (par) {
+      var t = par[0];
+      h += '<div class="mg-cat-bloco"><h3 class="mg-cat-titulo">' + par[1] + ' <small>· medidas úteis, cm</small></h3>';
+      h += '<div class="mg-cat-cab mg-cat-env" aria-hidden="true"><span>Largura</span><span>Compr.</span><span>Peso (g)</span><span></span></div>';
+      catalogos.envelopes[t].forEach(function (v, i) {
+        h += '<div class="mg-cat-linha mg-cat-env">' +
+          campoCat(t, i, "l", v.l, "Largura útil do envelope " + (i + 1)) +
+          campoCat(t, i, "c", v.c, "Comprimento útil do envelope " + (i + 1)) +
+          campoCat(t, i, "peso", v.peso, "Peso em gramas do envelope " + (i + 1)) +
+          '<button type="button" class="mg-x" data-apagar="' + t + '" data-i="' + i + '" aria-label="Apagar envelope ' + (i + 1) + '">✕</button></div>';
+      });
+      h += '<div class="mg-cat-acoes"><button type="button" class="mg-botao-sec mg-mini-botao" data-adicionar="' + t + '">+ Adicionar envelope</button></div></div>';
+    });
+
+    if (estado.confirmando) {
+      h += '<div class="mg-confirmar" role="alert"><span>Apagar suas mudanças e voltar ao catálogo inicial?</span>' +
+        '<button type="button" class="mg-botao mg-mini-botao" data-restaurar="sim">Sim, restaurar</button>' +
+        '<button type="button" class="mg-botao-sec mg-mini-botao" data-restaurar="nao">Cancelar</button></div>';
+    } else {
+      h += '<div class="mg-cat-acoes"><button type="button" class="mg-botao-sec mg-mini-botao" data-restaurar="pedir">Restaurar padrão</button></div>';
+    }
+    $("cat").innerHTML = h;
+  }
+  $("cat").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button");
+    if (!b) return;
+    if (b.hasAttribute("data-adicionar")) {
+      var nome = b.getAttribute("data-adicionar");
+      listaDe(nome).push(nome === "caixas" ? { nome: "", c: "", l: "", a: "" } : { l: "", c: "", peso: "" });
+      salvarCatalogos(); renderCatalogo(); tudo();
+      var novos = $("cat").querySelectorAll('input[data-lista="' + nome + '"]');
+      var alvo = nome === "caixas" ? novos[novos.length - 4] : novos[novos.length - 3];
+      if (alvo) alvo.focus();
+    } else if (b.hasAttribute("data-apagar")) {
+      listaDe(b.getAttribute("data-apagar")).splice(+b.getAttribute("data-i"), 1);
+      salvarCatalogos(); renderCatalogo(); tudo();
+    } else if (b.hasAttribute("data-restaurar")) {
+      var acao = b.getAttribute("data-restaurar");
+      if (acao === "pedir") estado.confirmando = true;
+      else {
+        estado.confirmando = false;
+        if (acao === "sim") { catalogos = catalogoPadrao(); try { localStorage.removeItem(CHAVE_CAT); } catch (e) {} }
+      }
+      renderCatalogo(); tudo();
+      var foco = $("cat").querySelector('[data-restaurar="' + (estado.confirmando ? "nao" : "pedir") + '"]');
+      if (foco) foco.focus();
+    }
+  });
+  function editarCatalogo(el) {
+    var item = listaDe(el.getAttribute("data-lista"))[+el.getAttribute("data-i")];
+    if (!item) return;
+    var k = el.getAttribute("data-k");
+    item[k] = el.value;
+    if (k !== "nome") {
+      var v = lerNumero(el.value);
+      el.setAttribute("aria-invalid", String(isNaN(v) || (k === "peso" ? v < 0 : v <= 0)));
+    }
+    salvarCatalogos();
+  }
+
+  /* ---------- entrada ---------- */
+  function entrada() {
+    var pct = num("e-margem-pct"), min = num("e-margem-min");
+    return {
+      dims: [num("e-c"), num("e-l"), num("e-a")],
+      pesoUn: num("e-peso"),
+      qtd: Math.max(1, Math.floor(num("e-qtd")) || 1),
+      tipo: radio("e-tipo"), protecao: radio("e-protecao"),
+      fabricante: $("e-fabricante").checked,
+      embalagem: $("e-embalagem").value, onda: $("e-onda").value,
+      margemPct: isNaN(pct) ? null : pct / 100, margemMinG: isNaN(min) ? null : min,
+      modalidade: $("e-modalidade").value,
+      caixas: caixasNum(), envelopes: envelopesNum()
+    };
+  }
+
+  var TEXTO_TIPO = {
+    rigido: "Caixinha, eletrônico, pote.",
+    flexivel: "Roupa, tecido. Informe as medidas <strong>já dobrado</strong>.",
+    plano: "Adesivo, papel, capinha."
+  };
+  var TEXTO_PROTECAO = {
+    nenhuma: "Não quebra nem amassa (roupa, pelúcia).",
+    leve: "Pode arranhar ou amassar.",
+    media: "Pode quebrar com impacto moderado (eletrônico, cosmético).",
+    alta: "Frágil (vidro, cerâmica, líquido em vidro)."
+  };
+  function textosAuxiliares() {
+    var t = radio("e-tipo") || "rigido", p = radio("e-protecao") || "media";
+    $("e-tipo-dica").innerHTML = TEXTO_TIPO[t];
+    var f = FOLGA[p], cam = f.camadas ? " e " + f.camadas + (f.camadas > 1 ? " camadas" : " camada") + " de plástico bolha" : (p === "leve" ? ", papel ou preenchimento simples" : "");
+    $("e-protecao-dica").innerHTML = TEXTO_PROTECAO[p] + " Folga de " + n1(f.cm) + " cm por lado" + cam + ".";
+    var emb = $("e-embalagem"), mod = $("e-modalidade");
+    $("e-pref-resumo").textContent = emb.options[emb.selectedIndex].text.replace(" (recomendado)", "") + " · " + mod.options[mod.selectedIndex].text;
+    $("e-exemplo").hidden = !estado.exemplo;
+  }
+
+  /* ---------- cartão principal ---------- */
+  function textoCopia(o) {
+    var p = o.pesos.cadastrar;
+    var peso = p >= 1000 ? p + " g (" + n1(p / 1000) + " kg)" : p + " g";
+    return "Peso: " + peso + " | " + o.cadastrar.join(" x ") + " cm";
+  }
+  function renderPrincipal(r) {
+    var o = r.mostrar, fora = r.foraDoLimite;
+    var h = '<div class="mg-rotulo-resultado' + (fora ? " mg-fora" : "") + '">';
+    h += '<div class="mg-cad-cabeca"><span class="mg-mini-titulo">Cadastre assim no anúncio</span>' +
+      (fora ? '<span class="mg-selo mg-selo-neg">FORA DO LIMITE</span>' : "") + "</div>";
+    h += '<div class="mg-cad-linha"><span>Peso</span><span class="mg-valor">' + fmtG(o.pesos.cadastrar) + "</span></div>";
+    h += '<div class="mg-cad-linha"><span>Compr. × Larg. × Alt.</span><span class="mg-valor mg-valor-medidas">' + medInt(o.cadastrar) + "</span></div>";
+    h += '<div class="mg-copiar"><input id="r-copia" readonly aria-label="Texto para copiar" value="' + esc(textoCopia(o)) + '">' +
+      '<button type="button" class="mg-botao" id="r-copiar">Copiar</button></div>';
+    h += '<div class="mg-copiado" id="r-copiado" role="status"></div>';
+    h += '<p class="mg-embalagem-txt">' + esc(o.descricao) + "</p>";
+    h += '<div class="mg-manda">Peso considerado no frete: <b>' + fmtG(o.considerado) + "</b>, pelo " + o.manda + ". ";
+    h += o.manda === "tamanho"
+      ? "O frete vai ser calculado pelo <b>tamanho</b>, não pelo peso (peso cúbico " + fmtG(o.cubico) + ")."
+      : "O frete vai ser calculado pelo <b>peso</b> (o peso cúbico, " + fmtG(o.cubico) + ", é menor" + (o.cubicoConta ? "" : " e fica abaixo do limiar de cubagem") + ").";
+    h += "</div></div>";
+    $("r-principal").innerHTML = h;
+  }
+  function copiar() {
+    var campo = $("r-copia"), aviso = $("r-copiado");
+    if (!campo) return;
+    var texto = campo.value;
+    function fallback() {
+      campo.focus(); campo.select();
+      try { campo.setSelectionRange(0, texto.length); } catch (e) {}
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      aviso.textContent = ok ? "Copiado." : "Texto selecionado. Use Ctrl+C (ou toque e segure para copiar).";
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(function () { aviso.textContent = "Copiado."; }, fallback);
+    } else fallback();
+  }
+  $("r-principal").addEventListener("click", function (ev) { if (ev.target.closest("#r-copiar")) copiar(); });
+
+  /* ---------- avisos e dicas ---------- */
+  var CAIXA_NIVEL = {
+    alerta: ["mg-alerta", "ALERTA", "alert"], aviso: ["mg-aviso", "ATENÇÃO", "status"],
+    positivo: ["mg-boa", "BOA NOTÍCIA", "status"], dica: ["mg-nota", "DICA", ""], nota: ["mg-nota", "NOTA", ""]
+  };
+  var ORDEM_NIVEL = { alerta: 0, aviso: 1, positivo: 2, dica: 3, nota: 4 };
+  function renderAvisos(r) {
+    var lista = r.dicas.slice().sort(function (a, b) { return ORDEM_NIVEL[a.nivel] - ORDEM_NIVEL[b.nivel]; });
+    $("r-avisos").innerHTML = lista.map(function (d) {
+      var c = CAIXA_NIVEL[d.nivel];
+      return '<div class="' + c[0] + '"' + (c[2] ? ' role="' + c[2] + '"' : "") + ' data-dica="' + d.id + '"><b>' + c[1] + "</b><span>" + esc(d.texto) + "</span></div>";
+    }).join("");
+  }
+
+  /* ---------- desenho ---------- */
+  function svgAbre(W, H, titulo) {
+    return '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(titulo) + '" xmlns="http://www.w3.org/2000/svg">';
+  }
+  function txt(x, y, t, anc, cls) {
+    return '<text x="' + x.toFixed(1) + '" y="' + y.toFixed(1) + '" text-anchor="' + (anc || "middle") + '" class="' + (cls || "sv-txt") + '">' + esc(t) + "</text>";
+  }
+  function svgCaixa(o) {
+    var W = 340, H = 236, PX = 58, PY = 34;
+    var ext = o.externasFinais || o.externas;
+    var C = ext[0], L = ext[1], A = ext[2];
+    var kx = Math.cos(Math.PI / 6) * 0.55, ky = Math.sin(Math.PI / 6) * 0.55;
+    var larg = C + L * kx, alt = A + L * ky;
+    var s = Math.min((W - 2 * PX) / larg, (H - 2 * PY) / alt);
+    var ox = (W - larg * s) / 2, oy = (H + alt * s) / 2;
+    function pt(x, y, z) { return [ox + (x + z * kx) * s, oy - (y + z * ky) * s]; }
+    function poli(pts, cls) { return '<polygon class="' + cls + '" points="' + pts.map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '"/>'; }
+    function seg(a, b, cls) { return '<line class="' + cls + '" x1="' + a[0].toFixed(1) + '" y1="' + a[1].toFixed(1) + '" x2="' + b[0].toFixed(1) + '" y2="' + b[1].toFixed(1) + '"/>'; }
+    function caixa3d(x, y, z, w, h, d, cls) {
+      return poli([pt(x, y, z), pt(x + w, y, z), pt(x + w, y + h, z), pt(x, y + h, z)], cls + " sv-frente") +
+        poli([pt(x, y + h, z), pt(x + w, y + h, z), pt(x + w, y + h, z + d), pt(x, y + h, z + d)], cls + " sv-topo") +
+        poli([pt(x + w, y, z), pt(x + w, y, z + d), pt(x + w, y + h, z + d), pt(x + w, y + h, z)], cls + " sv-lado");
+    }
+    var ct = o.conteudo, g = o.arranjo.grade;
+    var cx = (C - ct[0]) / 2, cy = (A - ct[2]) / 2, cz = (L - ct[1]) / 2;
+    var h = svgAbre(W, H, "Caixa de " + medInt(o.cadastrar) + " com o conteúdo de " + med(ct) + " dentro");
+    h += caixa3d(0, 0, 0, C, A, L, "sv-ext");
+    h += caixa3d(cx, cy, cz, ct[0], ct[2], ct[1], "sv-cont");
+    var i, top = cy + ct[2];
+    for (i = 1; i < g[0]; i++) {
+      var x = cx + i * ct[0] / g[0];
+      h += seg(pt(x, cy, cz), pt(x, top, cz), "sv-grade") + seg(pt(x, top, cz), pt(x, top, cz + ct[1]), "sv-grade");
+    }
+    for (i = 1; i < g[2]; i++) {
+      var y = cy + i * ct[2] / g[2];
+      h += seg(pt(cx, y, cz), pt(cx + ct[0], y, cz), "sv-grade") + seg(pt(cx + ct[0], y, cz), pt(cx + ct[0], y, cz + ct[1]), "sv-grade");
+    }
+    for (i = 1; i < g[1]; i++) {
+      var z = cz + i * ct[1] / g[1];
+      h += seg(pt(cx, top, z), pt(cx + ct[0], top, z), "sv-grade") + seg(pt(cx + ct[0], cy, z), pt(cx + ct[0], top, z), "sv-grade");
+    }
+    /* arestas da caixa por cima, para ficarem nítidas */
+    h += '<polyline class="sv-aresta" points="' + [pt(0, 0, 0), pt(C, 0, 0), pt(C, 0, L), pt(C, A, L), pt(0, A, L), pt(0, A, 0), pt(0, 0, 0)].map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '"/>';
+    h += seg(pt(0, A, 0), pt(C, A, 0), "sv-aresta") + seg(pt(C, A, 0), pt(C, 0, 0), "sv-aresta") + seg(pt(C, A, 0), pt(C, A, L), "sv-aresta");
+    var pc = pt(C / 2, 0, 0), pa = pt(0, A / 2, 0), pl = pt(C, 0, L / 2);
+    h += txt(pc[0], pc[1] + 18, "C " + o.cadastrar[0] + " cm");
+    h += txt(pa[0] - 8, pa[1] + 4, "A " + o.cadastrar[2] + " cm", "end");
+    h += txt(pl[0] + 8, pl[1] + 12, "L " + o.cadastrar[1] + " cm", "start");
+    return h + "</svg>";
+  }
+  function svgEnvelope(o) {
+    var W = 340, H = 236, PX = 62, PY = 40;
+    var Ce = Math.max(+o.envelope.c, +o.envelope.l), Le = Math.min(+o.envelope.c, +o.envelope.l);
+    var aba = Math.min(Le * 0.16, 4);
+    var s = Math.min((W - 2 * PX) / Ce, (H - 2 * PY) / (Le + aba));
+    var x0 = (W - Ce * s) / 2, y0 = (H - (Le + aba) * s) / 2 + aba * s;
+    var ct = o.conteudo, g = o.arranjo.grade;
+    var cw = ct[0] * s, chh = ct[1] * s, cx = x0 + (Ce * s - cw) / 2, cy = y0 + (Le * s - chh) / 2;
+    var h = svgAbre(W, H, "Envelope de " + n1(o.envelope.l) + " × " + n1(o.envelope.c) + " cm com o conteúdo de " + med(ct) + " dentro");
+    h += '<polygon class="sv-aba" points="' + [[x0, y0], [x0 + Ce * s, y0], [x0 + Ce * s - aba * s, y0 - aba * s], [x0 + aba * s, y0 - aba * s]].map(function (p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ") + '"/>';
+    h += '<rect class="sv-ext" x="' + x0.toFixed(1) + '" y="' + y0.toFixed(1) + '" width="' + (Ce * s).toFixed(1) + '" height="' + (Le * s).toFixed(1) + '"/>';
+    h += '<rect class="sv-cont" x="' + cx.toFixed(1) + '" y="' + cy.toFixed(1) + '" width="' + cw.toFixed(1) + '" height="' + chh.toFixed(1) + '"/>';
+    var i;
+    for (i = 1; i < g[0]; i++) { var x = cx + i * cw / g[0]; h += '<line class="sv-grade" x1="' + x.toFixed(1) + '" y1="' + cy.toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + (cy + chh).toFixed(1) + '"/>'; }
+    for (i = 1; i < g[1]; i++) { var y = cy + i * chh / g[1]; h += '<line class="sv-grade" x1="' + cx.toFixed(1) + '" y1="' + y.toFixed(1) + '" x2="' + (cx + cw).toFixed(1) + '" y2="' + y.toFixed(1) + '"/>'; }
+    h += '<rect class="sv-aresta" x="' + x0.toFixed(1) + '" y="' + y0.toFixed(1) + '" width="' + (Ce * s).toFixed(1) + '" height="' + (Le * s).toFixed(1) + '"/>';
+    h += txt(x0 + Ce * s / 2, y0 + Le * s + 18, "C " + o.cadastrar[0] + " cm");
+    h += txt(x0 + Ce * s + 8, y0 + Le * s / 2 + 4, "L " + o.cadastrar[1] + " cm", "start");
+    h += txt(x0 + Ce * s / 2, y0 + Le * s + 33, "altura cheio: " + o.cadastrar[2] + " cm" + (g[2] > 1 ? " · " + g[2] + " empilhados" : ""), "middle", "sv-txt-suave");
+    return h + "</svg>";
+  }
+  function renderDesenho(o) {
+    $("r-desenho").innerHTML = o.envelope ? svgEnvelope(o) : svgCaixa(o);
+    $("r-desenho-caixa").hidden = false;
+  }
+
+  /* ---------- detalhamento ---------- */
+  var NOME_STATUS = { ok: "dentro", perto: "perto do limite", excede: "passa" };
+  function valorLimite(it) {
+    if (Array.isArray(it.valor)) return medInt(it.valor) + (it.minimo ? " · mínimo " : " · até ") + medInt(it.limite);
+    if (it.unidade === "g") return gLim(it.valor) + " · até " + gLim(it.limite);
+    return n1(it.valor) + " cm · até " + n1(it.limite) + " cm";
+  }
+  function renderLimites(lim) {
+    return lim.itens.map(function (it) {
+      var st = it.minimo && it.status === "excede" ? "abaixo do mínimo" : NOME_STATUS[it.status];
+      return linha('<span class="mg-ponto ' + it.status + '" aria-hidden="true"></span>' + it.rotulo +
+        ' <small class="mg-st-' + it.status + '">' + st + "</small>", valorLimite(it));
+    }).join("");
+  }
+  function renderDetalhe(o, r) {
+    var n = r.entrada, p = o.pesos, h = "";
+    h += sub("Arranjo das unidades");
+    h += '<p class="mg-dica">' + esc(descreverArranjo(o.arranjo)) + (n.qtd > 1 ? " · bloco de " + med(o.conteudo) : "") + "</p>";
+
+    h += sub("Medidas") + '<div class="mg-resultado">';
+    h += linha("Conteúdo", med(o.conteudo));
+    if (o.tipo === "caixa") {
+      h += linha("Com folga (" + n1(o.folga) + " cm por lado)", med(o.comFolga));
+      h += linha("Externas (parede " + n1(o.parede) + " cm, onda " + o.onda + ")", med(o.externas));
+      if (o.minimoAplicado) h += linha("Mínimo aplicado (" + medInt(MINIMOS) + ")", med(o.externasFinais));
+    } else if (o.tipo === "catalogo") {
+      h += linha("Precisa por dentro (folga " + n1(o.folga) + " cm por lado)", med(o.comFolga));
+      h += linha("Caixa " + esc(o.caixa.nome) + " por dentro<small>externa − 2 × " + n1(o.parede) + " cm (onda " + o.onda + ")</small>", med(o.internas));
+      h += linha("Caixa " + esc(o.caixa.nome) + " por fora", med(o.externas));
+      if (o.minimoAplicado) h += linha("Mínimo aplicado (" + medInt(MINIMOS) + ")", med(o.externasFinais));
+    } else {
+      h += linha("Envelope precisa de<small>largura ≥ L + A + 1 · comprimento ≥ C + A + 1</small>", n1(o.precisa.l) + " × " + n1(o.precisa.c) + " cm");
+      h += linha("Envelope escolhido (larg. × compr.)", n1(o.envelope.l) + " × " + n1(o.envelope.c) + " cm");
+      h += linha("Altura cheio<small>conteúdo + " + n1(o.espessura) + " cm do envelope, mínimo " + ENVELOPE.alturaMin + " cm</small>", n1(o.conteudo[2] + o.espessura) + " cm");
+    }
+    h += linha("Para cadastrar (arredondado para cima)", medInt(o.cadastrar), " mg-linha-total") + "</div>";
+
+    h += sub("Peso") + '<div class="mg-resultado">';
+    h += linha("Produtos" + (n.qtd > 1 ? " (" + n.qtd + " × " + g1(n.pesoUn) + ")" : ""), g1(p.produtos));
+    if (o.envelope) h += linha(o.rotulo + " (catálogo)", g1(p.embalagem));
+    else h += linha((o.tipo === "catalogo" ? "Caixa " + esc(o.caixa.nome) : "Caixa") + "<small>papelão onda " + o.onda + ", " + GRAMATURA[o.onda] + " g/m²</small>", g1(p.embalagem));
+    if (p.bolha > 0) h += linha("Plástico bolha<small>" + o.camadas + (o.camadas > 1 ? " camadas" : " camada") + ", " + BOLHA_G_M2 + " g/m²</small>", g1(p.bolha));
+    h += linha("Fita e etiqueta", g1(p.fita));
+    h += linha("Total estimado", g1(p.total), " mg-linha-total");
+    h += linha("Margem de segurança<small>" + n1(n.margem.pct * 100) + "% ou " + n1(n.margem.minG) + " g, o maior</small>", "+ " + g1(p.margem));
+    h += linha("<b>Peso para cadastrar</b><small>arredondado para cima, de " + n.margem.multiploG + " em " + n.margem.multiploG + " g</small>", "<b>" + fmtG(p.cadastrar) + "</b>", " mg-linha-total") + "</div>";
+
+    h += sub("Frete") + '<div class="mg-resultado">';
+    h += linha("Peso cúbico<small>" + o.cadastrar.join(" × ") + " ÷ " + n.fator + " × 1000</small>", fmtG(o.cubico));
+    h += linha("Peso para cadastrar", fmtG(p.cadastrar));
+    h += linha("Peso considerado (o maior)", fmtG(o.considerado), " mg-linha-total") + "</div>";
+    h += '<p class="mg-dica">Quem manda no frete: <strong>' + (o.manda === "tamanho" ? "o tamanho" : "o peso") + "</strong>." +
+      (!o.cubicoConta ? " O peso cúbico ficou abaixo do limiar de cubagem e foi ignorado." : "") + "</p>";
+
+    h += sub("Limites · " + o.limites.nome) + '<div class="mg-resultado">' + renderLimites(o.limites) + "</div>";
+    $("r-detalhe").innerHTML = h;
+  }
+
+  /* ---------- comparação ---------- */
+  function renderOpcoes(r) {
+    var lista = r.opcoes.length ? r.opcoes : r.viaveis;
+    var h = "";
+    if (!lista.length) {
+      h += '<div class="mg-vazio">Nenhuma opção fica dentro dos limites desta modalidade.</div>';
+    } else {
+      if (!r.opcoes.length) h += '<p class="mg-dica">A embalagem escolhida nas preferências não serve. Estas são as opções automáticas:</p>';
+      h += '<div class="mg-cartoes' + (lista.length >= 4 ? " mg-4" : lista.length === 3 ? " mg-3" : "") + '">';
+      lista.forEach(function (o) {
+        var melhor = o === r.mostrar;
+        h += '<article class="mg-cartao' + (melhor ? " mg-melhor" : "") + '">';
+        h += '<div class="mg-cartao-cabeca"><h3>' + esc(o.tipo === "catalogo" ? o.nome : o.rotulo) + "</h3>" + (melhor ? '<span class="mg-selo">RECOMENDADA</span>' : "") + "</div>";
+        var sub2 = o.envelope ? n1(o.envelope.l) + " × " + n1(o.envelope.c) + " cm" : "onda " + o.onda;
+        if (o.camadas) sub2 += " · " + o.camadas + " de bolha";
+        h += '<div class="mg-quando">' + sub2 + "</div>";
+        h += '<div class="mg-resultado">';
+        h += linha("Medidas", medInt(o.cadastrar));
+        h += linha("Peso para cadastrar", fmtG(o.pesos.cadastrar));
+        h += linha("Peso cúbico", fmtG(o.cubico));
+        h += linha("Peso considerado", fmtG(o.considerado), " mg-linha-total");
+        h += "</div>";
+        h += '<div class="mg-quando">manda o ' + o.manda + (o.limites.status === "perto" ? ' · <span class="mg-st-perto">perto do limite</span>' : "") + "</div>";
+        h += "</article>";
+      });
+      h += "</div>";
+    }
+    var fora = r.todas.filter(function (o) { return lista.indexOf(o) < 0; });
+    if (fora.length) {
+      h += '<p class="mg-dica" style="margin-top:14px">Fora da comparação:</p><ul class="mg-fora-lista">';
+      fora.forEach(function (o) {
+        var motivo = !o.viavel ? o.motivo : "Você escolheu outra embalagem nas preferências.";
+        h += "<li><b>" + esc(o.rotulo) + ":</b> " + esc(motivo) + "</li>";
+      });
+      h += "</ul>";
+    }
+    $("r-opcoes").innerHTML = h;
+  }
+
+  /* ---------- liga tudo ---------- */
+  function tudo() {
+    textosAuxiliares();
+    var e = entrada();
+    var ok = e.dims.every(function (x) { return x > 0; }) && e.pesoUn > 0;
+    ["e-c", "e-l", "e-a", "e-peso"].forEach(function (id) {
+      var v = num(id), vazio = $(id).value.trim() === "";
+      $(id).setAttribute("aria-invalid", String(!vazio && !(v > 0)));
+    });
+    if (!ok) {
+      $("r-principal").innerHTML = '<div class="mg-rotulo-resultado"><span class="mg-mini-titulo">Cadastre assim no anúncio</span><div class="mg-vazio">Preencha comprimento, largura, altura e peso do produto.</div></div>';
+      $("r-avisos").innerHTML = ""; $("r-detalhe").innerHTML = ""; $("r-opcoes").innerHTML = "";
+      $("r-desenho-caixa").hidden = true;
+      salvar();
+      return;
+    }
+    var r = recomendar(e);
+    renderPrincipal(r); renderAvisos(r); renderDesenho(r.mostrar); renderDetalhe(r.mostrar, r); renderOpcoes(r);
+    salvar();
+  }
+
+  document.addEventListener("input", function (ev) {
+    var el = ev.target;
+    if (el.hasAttribute && el.hasAttribute("data-lista")) editarCatalogo(el);
+    if (el.hasAttribute && el.hasAttribute("data-produto")) estado.exemplo = false;
+    if (el.hasAttribute && (el.hasAttribute("data-salvar") || el.hasAttribute("data-lista"))) tudo();
+  });
+  document.addEventListener("change", function (ev) {
+    var el = ev.target;
+    if (el.hasAttribute && el.hasAttribute("data-produto")) estado.exemplo = false;
+    if (el.hasAttribute && el.hasAttribute("data-salvar")) tudo();
+  });
+  SANFONAS.forEach(function (id) { $(id).addEventListener("toggle", salvar); });
+  $("e-limpar").addEventListener("click", function () {
+    ["e-c", "e-l", "e-a", "e-peso"].forEach(function (id) { $(id).value = ""; });
+    $("e-qtd").value = "1";
+    estado.exemplo = false;
+    tudo();
+    $("e-c").focus();
+  });
+
+  if (!carregar()) {
+    aplicarValores(EXEMPLO);
+    estado.exemplo = true;
+  }
+  renderCatalogo();
+  tudo();
+})();
+</script>
+</body>
+</html>
