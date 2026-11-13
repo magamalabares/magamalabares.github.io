@@ -1,6 +1,6 @@
 /* Sementes de magamalabares · cores, fontes e componentes
    Visual de pacote de sementes: papel kraft, topo xadrez, tracejado e letra à mão.
-   Dia (kraft) é o padrão; noite (terra) segue o sistema ou o botão dia/noite (data-tema no <html>).
+   Só o modo claro (kraft).
    As páginas em vendas/ têm uma cópia deste arquivo embutida (funcionam sozinhas). */
 
 :root {
@@ -9,7 +9,7 @@
   --mg-fonte-texto: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mg-fonte-mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  /* dia · kraft */
+  /* kraft */
   --mg-fundo: #efe3cf;
   --mg-superficie: #fff8ec;
   --mg-nota: #f6ead6;          /* superfície 2 */
@@ -29,25 +29,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema="dia"]) {
-    --mg-fundo: #241912; --mg-superficie: #33251a; --mg-nota: #2b1f16;
-    --mg-linha: #c9976a; --mg-borda: #5c4430; --mg-texto: #fbefdc; --mg-suave: #d6b892;
-    --mg-destaque: #ff7a8a; --mg-logo: #ff7a8a; --mg-verde: #9ccf7a; --mg-campo: #241912;
-    --mg-botao-texto: #241912; --mg-positivo: #9ccf7a; --mg-negativo: #ff8f80; --mg-atencao: #f3d38b;
-    --mg-xadrez: rgba(255, 122, 138, .28);
-    color-scheme: dark;
-  }
-}
-:root[data-tema="noite"] {
-  --mg-fundo: #241912; --mg-superficie: #33251a; --mg-nota: #2b1f16;
-  --mg-linha: #c9976a; --mg-borda: #5c4430; --mg-texto: #fbefdc; --mg-suave: #d6b892;
-  --mg-destaque: #ff7a8a; --mg-logo: #ff7a8a; --mg-verde: #9ccf7a; --mg-campo: #241912;
-  --mg-botao-texto: #241912; --mg-positivo: #9ccf7a; --mg-negativo: #ff8f80; --mg-atencao: #f3d38b;
-  --mg-xadrez: rgba(255, 122, 138, .28);
-  color-scheme: dark;
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -62,20 +43,13 @@ code { font-family: var(--mg-fonte-mono); font-size: .92em; }
 .mg-pagina { max-width: 1120px; margin: 0 auto; padding: 20px 16px 64px; }
 .mg-estreita { max-width: 720px; }
 
-/* ---------- Topo: logotipo + dia/noite ---------- */
+/* ---------- Topo: logotipo ---------- */
 .mg-topo {
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
   padding-bottom: 14px; margin-bottom: 24px; border-bottom: 2px dashed var(--mg-borda);
 }
 .mg-marca { font-family: var(--mg-fonte-marca); font-size: 24px; line-height: 1; color: var(--mg-destaque); text-decoration: none; }
 .mg-marca:hover { color: var(--mg-destaque); }
-.mg-tema { display: flex; border: 2px solid var(--mg-linha); border-radius: 99px; background: var(--mg-superficie); overflow: hidden; }
-.mg-tema button {
-  font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .12em;
-  padding: 6px 12px; border: 0; background: transparent; color: var(--mg-suave); cursor: pointer;
-}
-.mg-tema button[aria-pressed="true"] { background: var(--mg-destaque); color: var(--mg-botao-texto); }
-.mg-tema button:focus-visible { outline: 2px solid var(--mg-destaque); outline-offset: -4px; }
 
 /* ---------- Pacote (página de uma utilidade) ---------- */
 .mg-xadrez {

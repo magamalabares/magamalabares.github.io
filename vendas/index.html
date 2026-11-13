@@ -5,11 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nº 1 · Quanto eu ganho vendendo? · magamalabares</title>
 <meta name="description" content="Calculadora de quanto sobra de uma venda na Shopee (vendedor CPF) e na Nuvemshop com Nuvem Pago. Regras de nov/2026.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E.f%7Bfill:%23fff8ec%7D.x%7Bfill:%23e24a60;fill-opacity:.35%7D.b%7Bfill:none;stroke:%23b8865a;stroke-width:3%7D.m%7Bfill:%23e24a60%7D%40media (prefers-color-scheme:dark)%7B.f%7Bfill:%2333251a%7D.x%7Bfill:%23ff7a8a;fill-opacity:.28%7D.b%7Bstroke:%23c9976a%7D.m%7Bfill:%23ff7a8a%7D%7D%3C/style%3E%3Cdefs%3E%3Cpattern id='x' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Crect class='f' width='10' height='10'/%3E%3Crect class='x' width='5' height='10'/%3E%3Crect class='x' width='10' height='5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='61' height='61' x='1.5' y='1.5' rx='13' fill='url(%23x)'/%3E%3Crect class='b' width='61' height='61' x='1.5' y='1.5' rx='13'/%3E%3Ccircle class='f' cx='32' cy='32' r='20'/%3E%3Ctext class='m' x='32' y='42' text-anchor='middle' font-family='Arial Rounded MT Bold,Arial Black,sans-serif' font-size='28'%3Em%3C/text%3E%3C/svg%3E">
-<script>
-  /* Aplica o tema salvo antes de desenhar, para não piscar. */
-  try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}
-</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3Cpattern id='x' width='16' height='16' patternUnits='userSpaceOnUse'%3E%3Crect width='16' height='16' fill='%23fff8ec'/%3E%3Crect width='8' height='16' fill='%23e24a60' fill-opacity='.4'/%3E%3Crect width='16' height='8' fill='%23e24a60' fill-opacity='.4'/%3E%3C/pattern%3E%3C/defs%3E%3Crect x='2' y='2' width='60' height='60' rx='14' fill='url(%23x)' stroke='%23b8865a' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='24.5' fill='%23fff8ec'/%3E%3Cpath d='M18 44V25M18 31a7 7 0 0 1 14 0V44M32 31a7 7 0 0 1 14 0V44' fill='none' stroke='%23d13c53' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <!-- Fontes da marca. Sem internet, cai no fallback do sistema (ver --mg-fonte-*). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -18,7 +14,7 @@
    Cópia de ../assets/magamalabares.css — ao mudar o visual, mude lá e copie para cá. */
 /* Sementes de magamalabares · cores, fontes e componentes
    Visual de pacote de sementes: papel kraft, topo xadrez, tracejado e letra à mão.
-   Dia (kraft) é o padrão; noite (terra) segue o sistema ou o botão dia/noite (data-tema no <html>).
+   Só o modo claro (kraft).
    As páginas em vendas/ têm uma cópia deste arquivo embutida (funcionam sozinhas). */
 
 :root {
@@ -27,7 +23,7 @@
   --mg-fonte-texto: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mg-fonte-mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  /* dia · kraft */
+  /* kraft */
   --mg-fundo: #efe3cf;
   --mg-superficie: #fff8ec;
   --mg-nota: #f6ead6;          /* superfície 2 */
@@ -47,25 +43,6 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema="dia"]) {
-    --mg-fundo: #241912; --mg-superficie: #33251a; --mg-nota: #2b1f16;
-    --mg-linha: #c9976a; --mg-borda: #5c4430; --mg-texto: #fbefdc; --mg-suave: #d6b892;
-    --mg-destaque: #ff7a8a; --mg-logo: #ff7a8a; --mg-verde: #9ccf7a; --mg-campo: #241912;
-    --mg-botao-texto: #241912; --mg-positivo: #9ccf7a; --mg-negativo: #ff8f80; --mg-atencao: #f3d38b;
-    --mg-xadrez: rgba(255, 122, 138, .28);
-    color-scheme: dark;
-  }
-}
-:root[data-tema="noite"] {
-  --mg-fundo: #241912; --mg-superficie: #33251a; --mg-nota: #2b1f16;
-  --mg-linha: #c9976a; --mg-borda: #5c4430; --mg-texto: #fbefdc; --mg-suave: #d6b892;
-  --mg-destaque: #ff7a8a; --mg-logo: #ff7a8a; --mg-verde: #9ccf7a; --mg-campo: #241912;
-  --mg-botao-texto: #241912; --mg-positivo: #9ccf7a; --mg-negativo: #ff8f80; --mg-atencao: #f3d38b;
-  --mg-xadrez: rgba(255, 122, 138, .28);
-  color-scheme: dark;
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
@@ -80,20 +57,13 @@ code { font-family: var(--mg-fonte-mono); font-size: .92em; }
 .mg-pagina { max-width: 1120px; margin: 0 auto; padding: 20px 16px 64px; }
 .mg-estreita { max-width: 720px; }
 
-/* ---------- Topo: logotipo + dia/noite ---------- */
+/* ---------- Topo: logotipo ---------- */
 .mg-topo {
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
   padding-bottom: 14px; margin-bottom: 24px; border-bottom: 2px dashed var(--mg-borda);
 }
 .mg-marca { font-family: var(--mg-fonte-marca); font-size: 24px; line-height: 1; color: var(--mg-destaque); text-decoration: none; }
 .mg-marca:hover { color: var(--mg-destaque); }
-.mg-tema { display: flex; border: 2px solid var(--mg-linha); border-radius: 99px; background: var(--mg-superficie); overflow: hidden; }
-.mg-tema button {
-  font-family: var(--mg-fonte-mono); font-size: 11px; letter-spacing: .12em;
-  padding: 6px 12px; border: 0; background: transparent; color: var(--mg-suave); cursor: pointer;
-}
-.mg-tema button[aria-pressed="true"] { background: var(--mg-destaque); color: var(--mg-botao-texto); }
-.mg-tema button:focus-visible { outline: 2px solid var(--mg-destaque); outline-offset: -4px; }
 
 /* ---------- Pacote (página de uma utilidade) ---------- */
 .mg-xadrez {
@@ -418,10 +388,6 @@ details.mg-letrinha .mg-sanfona-corpo { padding: 0 14px 14px; gap: 0; }
 <div class="mg-pagina">
   <header class="mg-topo">
     <a class="mg-marca" href="../">magamalabares</a>
-    <div class="mg-tema" role="group" aria-label="Tema">
-      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
-      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
-    </div>
   </header>
 
   <main class="mg-rotulo">
@@ -839,31 +805,6 @@ function calcNuvemshop(params) {
   function linha(rotulo, valor, extra) {
     return '<div class="mg-linha' + (extra || "") + '"><span>' + rotulo + "</span><span>" + valor + "</span></div>";
   }
-
-  /* ---------- tema ---------- */
-  var html = document.documentElement;
-  var midiaNoite = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  function temaEfetivo() {
-    var t = html.getAttribute("data-tema");
-    if (t === "noite" || t === "dia") return t;
-    return midiaNoite && midiaNoite.matches ? "noite" : "dia";
-  }
-  function marcarTema() {
-    var t = temaEfetivo();
-    document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
-      b.setAttribute("aria-pressed", String(b.getAttribute("data-tema-opcao") === t));
-    });
-  }
-  document.querySelectorAll("[data-tema-opcao]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var t = b.getAttribute("data-tema-opcao");
-      html.setAttribute("data-tema", t);
-      try { localStorage.setItem("mg-tema", t); } catch (e) {}
-      marcarTema();
-    });
-  });
-  if (midiaNoite && midiaNoite.addEventListener) midiaNoite.addEventListener("change", marcarTema);
-  marcarTema();
 
   /* ---------- memória (localStorage) ---------- */
   function salvar() {
