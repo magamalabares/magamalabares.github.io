@@ -1,10 +1,10 @@
-/* Magamalabares · botão noite/dia
-   Sem data-tema no <html>, a página segue o sistema.
+/* Sementes de magamalabares · botão dia/noite
+   Sem data-tema no <html>, a página segue o sistema (dia é o padrão).
    O botão [data-alternar-tema] (ou os botões [data-tema-opcao]) fixam o tema e lembram a escolha. */
 (function () {
   var CHAVE = "mg-tema";
   var html = document.documentElement;
-  var midiaDia = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
+  var midiaNoite = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
   function ler() { try { return localStorage.getItem(CHAVE); } catch (e) { return null; } }
   function gravar(v) { try { localStorage.setItem(CHAVE, v); } catch (e) { /* navegador bloqueou */ } }
@@ -12,7 +12,7 @@
   function efetivo() {
     var t = html.getAttribute("data-tema");
     if (t === "noite" || t === "dia") return t;
-    return midiaDia && midiaDia.matches ? "dia" : "noite";
+    return midiaNoite && midiaNoite.matches ? "noite" : "dia";
   }
 
   function marcar() {
@@ -40,6 +40,6 @@
     aplicar(novo);
   });
 
-  if (midiaDia && midiaDia.addEventListener) midiaDia.addEventListener("change", marcar);
+  if (midiaNoite && midiaNoite.addEventListener) midiaNoite.addEventListener("change", marcar);
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", marcar);
 })();

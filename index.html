@@ -3,45 +3,53 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Magamalabares</title>
-<meta name="description" content="Utilitários pessoais, um frasco de cada vez.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%234a1426'/%3E%3Crect x='3.5' y='3.5' width='57' height='57' fill='none' stroke='%23e6b7a3'/%3E%3Crect x='8.5' y='8.5' width='47' height='47' fill='none' stroke='%23e6b7a3'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-family='Didot,Georgia,serif' font-size='34' fill='%23fbe9e2'%3EM%3C/text%3E%3C/svg%3E">
+<title>magamalabares</title>
+<meta name="description" content="Sementes de magamalabares: utilitários pessoais, calculadoras e pequenas ferramentas do dia a dia.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3Cpattern id='x' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Crect width='10' height='10' fill='%2333251a'/%3E%3Crect width='5' height='10' fill='%23ff7a8a' fill-opacity='.28'/%3E%3Crect width='10' height='5' fill='%23ff7a8a' fill-opacity='.28'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23x)'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%2333251a'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Arial Rounded MT Bold,Arial Black,sans-serif' font-size='28' fill='%23ff7a8a'%3Em%3C/text%3E%3C/svg%3E">
 <script>try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/magamalabares.css">
 </head>
 <body>
 <div class="mg-pagina">
   <header class="mg-topo">
-    <a class="mg-marca" href="./">Magamalabares</a>
+    <a class="mg-marca" href="./">magamalabares</a>
     <div class="mg-tema" role="group" aria-label="Tema">
-      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
       <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
     </div>
   </header>
 
   <main>
     <div class="mg-vitrine-cabeca">
-      <p class="mg-numero">Coleção pessoal</p>
-      <h1 class="mg-titulo">Magamalabares</h1>
-      <p class="mg-sub">utilitários pessoais, um frasco de cada vez</p>
+      <p class="mg-numero">Sementes de</p>
+      <h1 class="mg-titulo">magamalabares</h1>
+      <p class="mg-sub">variedade: pessoal · plantado aos poucos</p>
     </div>
 
-    <div class="mg-frascos">
-      <a class="mg-frasco" href="vendas/">
-        <span class="mg-frasco-num">Nº 1</span>
-        <span class="mg-frasco-titulo">Quanto eu ganho vendendo?</span>
-        <span class="mg-frasco-sub">Shopee (vendedor CPF) e Nuvemshop · regras de nov/2026</span>
-        <span class="mg-abrir">ABRIR →</span>
+    <div class="mg-sementes">
+      <a class="mg-semente" href="vendas/">
+        <span class="mg-semente-topo mg-xadrez" aria-hidden="true"></span>
+        <span class="mg-semente-corpo">
+          <span class="mg-numero">Variedade Nº 1</span>
+          <span class="mg-semente-titulo">Quanto eu ganho vendendo?</span>
+          <span class="mg-semente-sub">Shopee (CPF) e Nuvemshop · nov/2026</span>
+          <span class="mg-pilula">abrir →</span>
+        </span>
       </a>
-      <a class="mg-frasco" href="vendas/embalagem.html">
-        <span class="mg-frasco-num">Nº 2</span>
-        <span class="mg-frasco-titulo">Qual embalagem eu cadastro?</span>
-        <span class="mg-frasco-sub">Peso e medidas do pacote para o anúncio, antes de ter a caixa · nov/2026</span>
-        <span class="mg-abrir">ABRIR →</span>
+      <a class="mg-semente" href="vendas/embalagem.html">
+        <span class="mg-semente-topo mg-xadrez" aria-hidden="true"></span>
+        <span class="mg-semente-corpo">
+          <span class="mg-numero">Variedade Nº 2</span>
+          <span class="mg-semente-titulo">Qual embalagem eu cadastro?</span>
+          <span class="mg-semente-sub">peso e medidas do pacote, antes de ter a caixa</span>
+          <span class="mg-pilula">abrir →</span>
+        </span>
       </a>
-      <div class="mg-frasco-vazio">
-        <span class="mg-frasco-num">Nº 3</span>
-        <span>próxima utilidade</span>
+      <div class="mg-semente-vazia">
+        <span class="mg-numero">Variedade Nº 3</span>
+        <span>canteiro livre</span>
       </div>
     </div>
   </main>
