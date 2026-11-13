@@ -27,7 +27,7 @@ olhinhos/
   index.html, olhinhos.css  ← Nº 3 · página e estilos próprios
   olhos.js              ← desenha os olhos (degradê, efeitos e motivos portados de magic_eyes.py e ds_eyes.py),
                           monta a folha A4 e gera o PDF (jsPDF)
-  personagens.js        ← biblioteca: 76 personagens em 11 temas (edite aqui; "Prefixo · Categoria" vira subaba do anime)
+  personagens.js        ← biblioteca: 80 personagens em 13 temas (edite aqui; "Prefixo · Categoria" vira subaba do anime)
   ferramentas/gerar_personagens.py  ← regenera personagens.js a partir de personagens_finais.json
   logo.js               ← logo e selo Sinint obrigatórios dos PDFs (SVG)
   assets-kanji.js       ← subset de Noto Serif JP Bold só com 上弦壱弐参肆伍陸 (OFL)

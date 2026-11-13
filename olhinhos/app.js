@@ -86,14 +86,19 @@
   try { fechados = JSON.parse(localStorage.getItem(GRUPOS) || "{}") || {}; } catch (e) { fechados = {}; }
   const salvarGrupos = () => { try { localStorage.setItem(GRUPOS, JSON.stringify(fechados)); } catch (e) { } };
 
-  // Um anime = uma aba. Temas "Prefixo · Categoria" (ex.: "Kimetsu · Hashiras") entram no anime cujo nome
-  // começa pelo prefixo ("Kimetsu no Yaiba"), em "Estilizados › Categoria"; o tema do próprio anime vira "Simples".
+  // Um anime = uma aba. Temas "Prefixo · Categoria" entram como subaba do anime cujo nome contém o prefixo
+  // ("Apotecária · Cortesãs" → Diários de uma Apotecária › Cortesãs); o tema do próprio anime vira a 1ª subaba.
+  // Em Kimetsu as categorias são versões estilizadas: Simples | Estilizados › Protagonistas, Hashiras, Onis.
+  const ESTILIZADOS = new Set(["Kimetsu no Yaiba"]);
   const TEMAS = [...new Set(LIB.map(c => c.theme))];
   const prefixo = t => t.includes(" · ") ? t.slice(0, t.indexOf(" · ")) : null;
   function caminho(t) {
     const pre = prefixo(t);
-    if (pre) return [TEMAS.find(x => !prefixo(x) && x.startsWith(pre)) || pre, "Estilizados", t.slice(pre.length + 3)];
-    if (TEMAS.some(x => prefixo(x) && t.startsWith(prefixo(x)))) return [t, "Simples"];
+    if (pre) {
+      const anime = TEMAS.find(x => !prefixo(x) && x.includes(pre)) || pre, cat = t.slice(pre.length + 3);
+      return ESTILIZADOS.has(anime) ? [anime, "Estilizados", cat] : [anime, cat];
+    }
+    if (TEMAS.some(x => prefixo(x) && t.includes(prefixo(x)))) return [t, ESTILIZADOS.has(t) ? "Simples" : t];
     return [t];
   }
   function arvore() {

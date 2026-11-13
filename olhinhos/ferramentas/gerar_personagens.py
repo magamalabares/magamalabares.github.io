@@ -183,17 +183,43 @@ def fx_de(ef):
         else: raise SystemExit("efeito desconhecido: " + k)
     return fx
 
-ORDEM = ["Frieren", "Diários de uma Apotecária", "Witch Hat Atelier", "Kimetsu no Yaiba", "Kimetsu · Protagonistas", "Kimetsu · Hashiras",
+ORDEM = ["Frieren", "Diários de uma Apotecária", "Apotecária · Concubinas", "Apotecária · Cortesãs", "Witch Hat Atelier", "Kimetsu no Yaiba", "Kimetsu · Protagonistas", "Kimetsu · Hashiras",
          "Kimetsu · Onis", "Kimetsu · Especial", "Yomi no Tsugai", "Sailor Moon", "League of Legends", "Olhos mágicos"]
 
 OMITIR = {"Kimetsu · Especial"}
 
+# Diários de uma Apotecária: três subgrupos (cada um começa numa folha nova), em ordem alfabética
+RETEMA = {"AH-DUO": "Apotecária · Concubinas", "GYOKUYOU": "Apotecária · Concubinas", "LIHUA": "Apotecária · Concubinas",
+          "LISHU": "Apotecária · Concubinas", "LOULAN": "Apotecária · Concubinas"}
+ALFABETICOS = {"Diários de uma Apotecária", "Apotecária · Concubinas", "Apotecária · Cortesãs"}
+QUANTIDADE = {"JINSHI": 1, "MAOMAO": 1}   # deixaram de ser dobrados
+def padrao(nome, tema, cores, paradas, faixa, cres, top):
+    return {"nome": nome, "tema": tema, "tipo": "padrao", "cores": cores, "paradas": paradas, "faixa": faixa,
+            "efeitos": {"cres": cres, "top": top}, "quantidade": 1}
+NOVOS = [
+    padrao("FENGXIAN", "Apotecária · Cortesãs", ["#4A0A2E", "#7E1448", "#B02A62", "#D24C80", "#EA86AA", "#F8C2D4"], G6, "#B02A62",
+           ["#F8C2D4", .55, .34], ["#4A0A2E", .2, .2]),
+    padrao("JOKA", "Apotecária · Cortesãs", ["#3A1206", "#6A240C", "#9A4014", "#C2662A", "#DE9A5E", "#F2CCA2"], G6, "#9A4014",
+           ["#F2CCA2", .55, .34], ["#3A1206", .2, .2]),
+    padrao("MEIMEI", "Apotecária · Cortesãs", ["#0A3A3E", "#14605E", "#1E8A80", "#3CB0A0", "#82D4C4", "#C4F0E6"], G6, "#1E8A80",
+           ["#C4F0E6", .55, .34], ["#0A3A3E", .2, .2]),
+    # olho de duas cores: rosa-violeta em cima, âmbar embaixo, com transição suave (8 cores)
+    padrao("PAIRIN", "Apotecária · Cortesãs", ["#4E1652", "#8A3482", "#B85AA0", "#CC7EA6", "#DA9C98", "#E4B282", "#F0CC94", "#FBE4B6"],
+           [0, 14, 29, 42, 55, 68, 85, 100], "#A84A94", ["#FBE4B6", .5, .32], ["#4E1652", .2, .2]),
+]
+
 def main(src, out):
     L = json.load(open(src, encoding="utf-8"))
+    for x in L:
+        if x["tema"] == "Diários de uma Apotecária":
+            x["tema"] = RETEMA.get(x["nome"], x["tema"])
+            if x["nome"] in QUANTIDADE: x["quantidade"] = QUANTIDADE[x["nome"]]
+    L += NOVOS
     temas = {x["tema"] for x in L}; assert temas == set(ORDEM), temas ^ set(ORDEM)
     # "Kimetsu · Especial" só repetia olhos que já existem nas outras abas de Kimetsu: fica de fora
     L = [x for x in L if x["tema"] not in OMITIR]
-    L.sort(key=lambda x: ORDEM.index(x["tema"]))   # sort estável: mantém a ordem do JSON dentro do tema
+    # sort estável: mantém a ordem do JSON dentro do tema (os subgrupos da Apotecária vão em ordem alfabética)
+    L.sort(key=lambda x: (ORDEM.index(x["tema"]), x["nome"] if x["tema"] in ALFABETICOS else ""))
     porNome = {}
     for x in L:
         if x["tipo"] == "procedural": porNome.setdefault(x["funcao"], x)
@@ -213,7 +239,8 @@ def main(src, out):
         else: raise SystemExit("tipo desconhecido: " + x["tipo"])
         o["qty"] = x.get("quantidade", 1)
         linhas.append("  " + json.dumps(o, ensure_ascii=False, separators=(", ", ": ")))
-    cab = """// Biblioteca de personagens – gerada de referencias_site/personagens_finais.json (76 personagens; sem a aba “Kimetsu · Especial”, que repetia olhos).
+    cab = """// Biblioteca de personagens – gerada de referencias_site/personagens_finais.json (NNN personagens; sem a aba “Kimetsu · Especial”,
+// que repetia olhos; com as cortesãs da Apotecária e os subgrupos "Apotecária · Concubinas" e "Apotecária · Cortesãs").
 // Formato:
 //   colors/stops: degradê do topo para a base da íris (stops em %) | band: cor da faixa ("a|b" = faixa de duas cores)
 //   fx: efeitos suaves: cres (meia-lua), top (sombra no topo), glow (brilhos), mist (névoa), rim (borda escura),
@@ -227,6 +254,7 @@ def main(src, out):
 //   qty: 1 = normal, 2 = dobro de olhinhos
 //   proc: nome da função Python de origem (só referência)
 """
+    cab = cab.replace("NNN", str(len(linhas)))
     open(out, "w", encoding="utf-8").write(cab + "window.SININT_LIB = [\n" + ",\n".join(linhas) + "\n];\n")
     print(len(linhas), "personagens")
 
