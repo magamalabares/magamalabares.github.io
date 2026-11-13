@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Nº 3 · Folha de olhinhos · magamalabares</title>
 <meta name="description" content="Monte folhas A4 de olhinhos em degradê para amigurumi (Sinint amigurumis), nos tamanhos exatos, e baixe em PDF.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3Cpattern id='x' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Crect width='10' height='10' fill='%2333251a'/%3E%3Crect width='5' height='10' fill='%23ff7a8a' fill-opacity='.28'/%3E%3Crect width='10' height='5' fill='%23ff7a8a' fill-opacity='.28'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23x)'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%2333251a'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Arial Rounded MT Bold,Arial Black,sans-serif' font-size='28' fill='%23ff7a8a'%3Em%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cstyle%3E.f%7Bfill:%23fff8ec%7D.x%7Bfill:%23e24a60;fill-opacity:.35%7D.b%7Bfill:none;stroke:%23b8865a;stroke-width:3%7D.m%7Bfill:%23e24a60%7D%40media (prefers-color-scheme:dark)%7B.f%7Bfill:%2333251a%7D.x%7Bfill:%23ff7a8a;fill-opacity:.28%7D.b%7Bstroke:%23c9976a%7D.m%7Bfill:%23ff7a8a%7D%7D%3C/style%3E%3Cdefs%3E%3Cpattern id='x' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Crect class='f' width='10' height='10'/%3E%3Crect class='x' width='5' height='10'/%3E%3Crect class='x' width='10' height='5'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='61' height='61' x='1.5' y='1.5' rx='13' fill='url(%23x)'/%3E%3Crect class='b' width='61' height='61' x='1.5' y='1.5' rx='13'/%3E%3Ccircle class='f' cx='32' cy='32' r='20'/%3E%3Ctext class='m' x='32' y='42' text-anchor='middle' font-family='Arial Rounded MT Bold,Arial Black,sans-serif' font-size='28'%3Em%3C/text%3E%3C/svg%3E">
 <script>try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -58,10 +58,11 @@
         <fieldset class="tamanhos">
           <legend>Tamanhos</legend>
           <div class="ol-pilulas">
+            <label><input type="checkbox" value="14"><span>14 mm</span></label>
             <label><input type="checkbox" value="12" checked><span>12 mm</span></label>
             <label><input type="checkbox" value="10" checked><span>10 mm</span></label>
-            <label><input type="checkbox" value="9"><span>9 mm</span></label>
             <label><input type="checkbox" value="8"><span>8 mm</span></label>
+            <label><input type="checkbox" value="6"><span>6 mm</span></label>
           </div>
         </fieldset>
 
@@ -108,7 +109,7 @@
   <form method="dialog" id="ed-form">
     <div class="ed-cab">
       <h2 id="ed-titulo">Novo personagem</h2>
-      <button class="mg-x" value="cancel" type="submit" aria-label="Fechar">✕</button>
+      <button class="mg-x" value="cancel" type="submit" formnovalidate aria-label="Fechar">✕</button>
     </div>
     <div class="ed-corpo">
       <div class="ed-previa">
@@ -119,10 +120,10 @@
 
       <div class="ed-campos">
         <div class="mg-par">
-          <label class="mg-campo">Nome<input type="text" id="ed-nome" required maxlength="24" placeholder="Ex.: ANYA"></label>
-          <label class="mg-campo">Tema<input type="text" id="ed-tema" list="temas" maxlength="40" placeholder="Ex.: Spy x Family"></label>
-          <datalist id="temas"></datalist>
+          <label class="mg-campo">Nome<input type="text" id="ed-nome" required maxlength="24" placeholder="Ex.: ANYA" autocomplete="off"></label>
+          <label class="mg-campo">Tema<input type="text" id="ed-tema" maxlength="40" placeholder="Ex.: Spy x Family" autocomplete="off"></label>
         </div>
+        <div class="ol-temas" id="temas" aria-label="Temas já usados"></div>
 
         <fieldset class="bloco">
           <legend>Degradê <small>(do topo para a base da íris)</small></legend>
@@ -145,15 +146,32 @@
 
         <fieldset class="bloco">
           <legend>Quantidade</legend>
-          <label class="chk"><input type="radio" name="ed-qty" value="1" checked> Normal (12 olhos de cada tamanho)</label>
-          <label class="chk"><input type="radio" name="ed-qty" value="2"> Dobro (24 olhos de cada tamanho)</label>
+          <div class="mg-segmento">
+            <label><input type="radio" name="ed-qty" value="1" checked><span>Normal · 12 de cada</span></label>
+            <label><input type="radio" name="ed-qty" value="2"><span>Dobro · 24 de cada</span></label>
+          </div>
         </fieldset>
       </div>
     </div>
     <p class="erro" id="ed-erro" role="alert"></p>
     <div class="ed-rodape">
-      <button class="mg-botao-sec" value="cancel" type="submit">Cancelar</button>
+      <button class="mg-botao-sec" value="cancel" type="submit" formnovalidate>Cancelar</button>
       <button class="mg-botao" id="ed-salvar" type="button">Salvar personagem</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===================== AVISOS E CONFIRMAÇÕES (no lugar de alert/confirm) ===================== -->
+<dialog id="caixa" class="mg-dialogo" aria-labelledby="caixa-titulo" aria-describedby="caixa-texto">
+  <form method="dialog">
+    <div class="mg-dialogo-topo" aria-hidden="true"></div>
+    <div class="mg-dialogo-corpo">
+      <h2 id="caixa-titulo"></h2>
+      <p id="caixa-texto"></p>
+    </div>
+    <div class="mg-dialogo-acoes">
+      <button class="mg-botao-sec" value="nao" id="caixa-nao" formnovalidate>Cancelar</button>
+      <button class="mg-botao" value="sim" id="caixa-sim" formnovalidate>OK</button>
     </div>
   </form>
 </dialog>

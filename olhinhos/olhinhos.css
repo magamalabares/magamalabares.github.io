@@ -91,7 +91,6 @@
 .bloco legend small { font-weight: 400; font-size: 12px; color: var(--mg-suave); }
 .barra { height: 18px; border-radius: 99px; margin: 6px 0 10px; border: 2px solid var(--mg-borda); }
 .cor-linha { display: grid; grid-template-columns: 40px minmax(0, 1fr) 84px 32px; gap: 8px; align-items: center; margin-bottom: 6px; }
-.editor input[type=color] { width: 40px; height: 32px; border: 2px solid var(--mg-borda); border-radius: 6px; padding: 2px; background: var(--mg-campo); cursor: pointer; }
 .cor-linha input[type=text], .cor-linha input[type=number] {
   width: 100%; padding: 6px 8px; border: 2px solid var(--mg-borda); border-radius: 6px; background: var(--mg-campo); color: var(--mg-texto);
   font-family: var(--mg-fonte-mono); font-size: 13px;
@@ -102,11 +101,19 @@
 .linha, .linha-acoes { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .efeito { border-top: 2px dashed var(--mg-borda); padding-top: 8px; margin-top: 8px; }
 .efeito:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
-.chk { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; line-height: 1.45; cursor: pointer; }
-.chk input { margin-top: 3px; accent-color: var(--mg-verde); }
-.efeito > .chk { font-weight: 700; }
+.efeito > .mg-check { font-weight: 700; }
+.bloco .mg-segmento { margin-top: 4px; }
+.ol-temas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+.ol-temas:empty { display: none; }
+.ol-tema-sug {
+  border: 2px solid var(--mg-borda); border-radius: 99px; background: var(--mg-campo); color: var(--mg-suave);
+  font: 700 12px var(--mg-fonte-texto); padding: 4px 12px; cursor: pointer;
+}
+.ol-tema-sug:hover { border-color: var(--mg-destaque); color: var(--mg-destaque); }
+.ol-tema-sug.ativo { background: var(--mg-destaque); border-color: var(--mg-destaque); color: var(--mg-botao-texto); }
+.ol-tema-sug:focus-visible { outline: 2px solid var(--mg-destaque); outline-offset: 2px; }
 .efeito .params { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 14px; margin: 6px 0 0 24px; }
 .efeito .params.off { display: none; }
 .param { display: grid; gap: 2px; font-size: 12px; color: var(--mg-suave); }
-.param input[type=range] { width: 100%; accent-color: var(--mg-destaque); }
+.param input[type=color] { width: 44px; height: 30px; }
 .erro { color: var(--mg-negativo); margin: 0 20px; min-height: 1.2em; font-size: 14px; }

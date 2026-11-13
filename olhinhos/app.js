@@ -12,6 +12,21 @@
     kids.forEach(k => k != null && e.append(k)); return e;
   };
   const clone = o => JSON.parse(JSON.stringify(o));
+
+  // ---------- caixa do app no lugar de alert() e confirm() ----------
+  // caixa({ titulo, texto, ok, cancelar }) → Promise<boolean>; sem "cancelar" vira um aviso de um botão só.
+  function caixa({ titulo, texto, ok = "OK", cancelar = null }) {
+    const d = $("#caixa");
+    $("#caixa-titulo").textContent = titulo; $("#caixa-texto").textContent = texto;
+    $("#caixa-sim").textContent = ok;
+    $("#caixa-nao").hidden = !cancelar; if (cancelar) $("#caixa-nao").textContent = cancelar;
+    d.returnValue = "";
+    return new Promise(res => {
+      d.addEventListener("close", () => res(d.returnValue === "sim"), { once: true });
+      d.showModal(); (cancelar ? $("#caixa-nao") : $("#caixa-sim")).focus();
+    });
+  }
+  const avisar = (titulo, texto) => caixa({ titulo, texto });
   const norm = s => (s || "").normalize("NFKD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
   // ---------- estado ----------
@@ -26,6 +41,10 @@
       if (saved.settings) state.settings = { ...state.settings, ...saved.settings };
     }
   } catch (e) { /* sem armazenamento: segue sem lembrar */ }
+  // Tamanhos disponíveis. Configurações antigas (com 9 mm, que saiu) caem para o que ainda existe.
+  const TAMANHOS = [14, 12, 10, 8, 6];
+  state.settings.sizes = (Array.isArray(state.settings.sizes) ? state.settings.sizes : []).map(Number).filter(s => TAMANHOS.includes(s));
+  if (!state.settings.sizes.length) state.settings.sizes = [12, 10];
   const save = () => { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { } };
 
   const allChars = () => [...state.custom, ...LIB];
@@ -90,9 +109,9 @@
           el("span", { class: "check", "aria-hidden": "true", text: sel ? "✓" : "" }), miniEyes(ch), el("span", { class: "nome", text: ch.name }),
           el("button", { class: "acao", type: "button", text: mine ? "editar" : "editar cópia", onclick: (e) => { e.stopPropagation(); openEditor(ch); } }),
           mine ? el("button", {
-            class: "acao", type: "button", text: "excluir", "aria-label": "Excluir " + ch.name, onclick: (e) => {
+            class: "acao", type: "button", text: "excluir", "aria-label": "Excluir " + ch.name, onclick: async (e) => {
               e.stopPropagation();
-              if (!confirm(`Excluir ${ch.name}?`)) return;
+              if (!await caixa({ titulo: `Excluir ${ch.name}?`, texto: "O personagem sai de “Meus personagens” neste navegador.", ok: "Excluir", cancelar: "Cancelar" })) return;
               state.custom = state.custom.filter(c => c._id !== ch._id); state.sel = state.sel.filter(s => s.id !== ch._id);
               save(); renderList(); renderSelected(); schedulePreview(); fillThemes();
             }
@@ -145,7 +164,7 @@
       const base = state.settings.title || (state.settings.byTheme && themes.length === 1 ? themes[0] : "olhinhos");
       const slug = norm(base).replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "olhinhos";
       doc.save(`olhinhos_${slug}.pdf`.replace("olhinhos_olhinhos", "olhinhos"));
-    } catch (e) { console.error(e); alert("Não foi possível gerar o PDF. Tente de novo."); }
+    } catch (e) { console.error(e); avisar("Não deu para gerar o PDF", "Tente de novo. Se continuar, recarregue a página."); }
     finally { btn.textContent = old; btn.disabled = !state.sel.length; }
   }
 
@@ -184,7 +203,7 @@
       band: !ch || draft.band === draft.colors[mid] };
     $("#ed-titulo").textContent = editing ? `Editar ${ch.name}` : ch ? `Nova versão de ${ch.name}` : "Novo personagem";
     $("#ed-salvar").textContent = editing ? "Salvar alterações" : "Salvar em meus personagens";
-    $("#ed-nome").value = draft.name; $("#ed-tema").value = draft.theme || "";
+    $("#ed-nome").value = draft.name; $("#ed-tema").value = draft.theme || ""; fillThemes();
     $("#ed-faixa-cor").value = draft.band;
     document.querySelectorAll('input[name="ed-qty"]').forEach(r => r.checked = Number(r.value) === (draft.qty || 1));
     $("#ed-erro").textContent = "";
@@ -240,7 +259,7 @@
         params.classList.toggle("off", !cb.checked); fill(); updateEditorPreview();
       });
       fill();
-      wrap.append(el("label", { class: "chk" }, cb, E.label), params);
+      wrap.append(el("label", { class: "mg-check" }, cb, el("span", { text: E.label })), params);
       fs.append(wrap);
     });
   }
@@ -273,14 +292,19 @@
     }
     save(); dlg.close(); renderList(); renderSelected(); schedulePreview(); fillThemes();
   }
+  // sugestões de tema em pílulas (no lugar do <datalist>, que não aceita estilo)
   function fillThemes() {
-    const dl = $("#temas"); dl.textContent = "";
-    [...new Set(allChars().map(c => c.theme).filter(Boolean))].forEach(t => dl.append(el("option", { value: t })));
+    const box = $("#temas"); box.textContent = "";
+    const atual = $("#ed-tema").value.trim();
+    [...new Set(allChars().map(c => c.theme).filter(Boolean))].forEach(t => box.append(el("button", {
+      type: "button", class: "ol-tema-sug" + (t === atual ? " ativo" : ""), text: t, "aria-pressed": String(t === atual),
+      onclick: () => { $("#ed-tema").value = t; fillThemes(); }
+    })));
   }
 
   // ---------- exportar / importar ----------
   function exportCustom() {
-    if (!state.custom.length) { alert("Você ainda não criou personagens."); return; }
+    if (!state.custom.length) { avisar("Nada para exportar", "Você ainda não criou personagens."); return; }
     const data = state.custom.map(c => { const { _id, _v, ...rest } = c; return rest; });
     const blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" });
     const a = el("a", { href: URL.createObjectURL(blob), download: "meus_olhinhos.json" });
@@ -299,8 +323,9 @@
           state.custom.push({ ...clean, _id: "meu:" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), _v: 0 }); n++;
         });
         save(); renderList(); fillThemes();
-        alert(n ? `${n} personagem(ns) importado(s).` : "Nenhum personagem válido no arquivo.");
-      } catch (e) { alert("Arquivo inválido."); }
+        if (n) avisar("Importado", n === 1 ? "1 personagem foi para “Meus personagens”." : `${n} personagens foram para “Meus personagens”.`);
+        else avisar("Nada importado", "Nenhum personagem válido no arquivo.");
+      } catch (e) { avisar("Arquivo inválido", "Use um arquivo .json exportado por este gerador."); }
     };
     r.readAsText(file);
   }
@@ -331,6 +356,7 @@
     $("#importar").addEventListener("change", e => { if (e.target.files[0]) importCustom(e.target.files[0]); e.target.value = ""; });
     $("#ed-salvar").addEventListener("click", saveEditor);
     $("#ed-nome").addEventListener("input", updateEditorPreview);
+    $("#ed-tema").addEventListener("input", fillThemes);
     $("#ed-add").addEventListener("click", () => {
       const i = draft.colors.length - 1; draft.colors.splice(i, 0, draft.colors[i]); draft.stops.splice(i, 0, Math.max(0, draft.stops[i] - 5));
       syncLinked(true); buildStops(); updateEditorPreview();

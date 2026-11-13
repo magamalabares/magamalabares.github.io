@@ -283,7 +283,10 @@
         const cy = yy + s / 2;
         P.pill(4, cy - 2.5, 12, 5, hc);
         centro(`${s}MM`, 10, cy + 0.8, { font: "Quicksand", bold: true, size: 6.6, color: "#FFFFFF" });
-        CENTERS.forEach(([a, b]) => { P.eye(eyeImg(ch, 0), a, cy, s); P.eye(eyeImg(ch, 1), b, cy, s); });
+        // Até 12 mm a grade é a do script Python (olhos do par a 14 mm de distância).
+        // Acima disso o par se abre para sobrar 2 mm entre os dois olhos, sem encostar.
+        const abre = Math.max(0, (s + 2 - 14) / 2);
+        CENTERS.forEach(([a, b]) => { P.eye(eyeImg(ch, 0), a - abre, cy, s); P.eye(eyeImg(ch, 1), b + abre, cy, s); });
         yy += s + (k < rows.length - 1 ? 3.5 : 5);
       });
     });
