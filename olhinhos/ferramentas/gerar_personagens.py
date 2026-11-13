@@ -186,9 +186,13 @@ def fx_de(ef):
 ORDEM = ["Frieren", "Diários de uma Apotecária", "Witch Hat Atelier", "Kimetsu no Yaiba", "Kimetsu · Protagonistas", "Kimetsu · Hashiras",
          "Kimetsu · Onis", "Kimetsu · Especial", "Yomi no Tsugai", "Sailor Moon", "League of Legends", "Olhos mágicos"]
 
+OMITIR = {"Kimetsu · Especial"}
+
 def main(src, out):
     L = json.load(open(src, encoding="utf-8"))
     temas = {x["tema"] for x in L}; assert temas == set(ORDEM), temas ^ set(ORDEM)
+    # "Kimetsu · Especial" só repetia olhos que já existem nas outras abas de Kimetsu: fica de fora
+    L = [x for x in L if x["tema"] not in OMITIR]
     L.sort(key=lambda x: ORDEM.index(x["tema"]))   # sort estável: mantém a ordem do JSON dentro do tema
     porNome = {}
     for x in L:
@@ -209,7 +213,7 @@ def main(src, out):
         else: raise SystemExit("tipo desconhecido: " + x["tipo"])
         o["qty"] = x.get("quantidade", 1)
         linhas.append("  " + json.dumps(o, ensure_ascii=False, separators=(", ", ": ")))
-    cab = """// Biblioteca de personagens – gerada de referencias_site/personagens_finais.json (82 personagens).
+    cab = """// Biblioteca de personagens – gerada de referencias_site/personagens_finais.json (76 personagens; sem a aba “Kimetsu · Especial”, que repetia olhos).
 // Formato:
 //   colors/stops: degradê do topo para a base da íris (stops em %) | band: cor da faixa ("a|b" = faixa de duas cores)
 //   fx: efeitos suaves: cres (meia-lua), top (sombra no topo), glow (brilhos), mist (névoa), rim (borda escura),

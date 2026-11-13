@@ -26,11 +26,22 @@
 .tema.meus > .tema-cab::before { content: "★"; background: var(--mg-verde); border-color: var(--mg-verde); color: var(--mg-campo); font-size: 11px; }
 .tema-cab:focus-visible { outline: 2px solid var(--mg-destaque); outline-offset: -2px; }
 .tema-cab h3 { flex: 1; min-width: 0; margin: 0; font-family: var(--mg-fonte-mono); font-weight: 500; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--mg-verde); }
-.tema-cab .conta { color: var(--mg-suave); }
+.tema-cab .conta { color: var(--mg-suave); white-space: nowrap; }
 .tema-cab .nsel { margin-left: 8px; padding: 1px 8px; border-radius: 99px; background: var(--mg-verde); color: var(--mg-campo); letter-spacing: .06em; text-transform: none; }
 .tema-cab .todos { flex: 0 0 auto; background: none; border: 0; color: var(--mg-destaque); cursor: pointer; padding: 2px 4px; font: 600 13px var(--mg-fonte-texto); }
 .tema-cab .todos:hover { text-decoration: underline; }
 .tema-corpo { padding: 0 0 8px; }
+/* subabas (ex.: Kimetsu › Estilizados › Hashiras): recuadas, com linha à esquerda e cabeçalho menor */
+.tema.sub { margin-left: 10px; padding-left: 8px; border-bottom: 0; border-left: 2px dashed var(--mg-borda); }
+.tema.sub + .tema.sub { margin-top: 2px; }
+.tema.sub > .tema-cab { position: static; padding: 7px 6px; }
+.tema.sub > .tema-cab::before { width: 18px; height: 18px; font-size: 12px; }
+.tema-cab h4 { flex: 1; min-width: 0; margin: 0; font-family: var(--mg-fonte-mono); font-weight: 500; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--mg-texto); }
+.tema.sub .tema-corpo { padding-bottom: 4px; }
+@media (max-width: 520px) {
+  .tema.sub { margin-left: 4px; padding-left: 4px; }
+  .tema.sub .item { gap: 8px; padding: 6px 4px; }
+}
 .item { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; }
 .item:hover { background: var(--mg-nota); }
 .item.sel { background: var(--mg-nota); border-color: var(--mg-linha); }

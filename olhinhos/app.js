@@ -80,11 +80,35 @@
     miniCache.get(key).forEach(src => box.append(el("img", { src, alt: "", width: "26", height: "26" })));
     return box;
   }
-  // grupos recolhíveis: estado aberto/fechado lembrado no navegador (fechados por padrão)
-  const GRUPOS = "sinint_olhinhos_grupos";
-  let abertos = {};
-  try { abertos = JSON.parse(localStorage.getItem(GRUPOS) || "{}") || {}; } catch (e) { abertos = {}; }
-  const salvarGrupos = () => { try { localStorage.setItem(GRUPOS, JSON.stringify(abertos)); } catch (e) { } };
+  // grupos recolhíveis: todos começam abertos; os que a pessoa fecha ficam lembrados no navegador
+  const GRUPOS = "sinint_olhinhos_fechados";
+  let fechados = {};
+  try { fechados = JSON.parse(localStorage.getItem(GRUPOS) || "{}") || {}; } catch (e) { fechados = {}; }
+  const salvarGrupos = () => { try { localStorage.setItem(GRUPOS, JSON.stringify(fechados)); } catch (e) { } };
+
+  // Um anime = uma aba. Temas "Prefixo · Categoria" (ex.: "Kimetsu · Hashiras") entram no anime cujo nome
+  // começa pelo prefixo ("Kimetsu no Yaiba"), em "Estilizados › Categoria"; o tema do próprio anime vira "Simples".
+  const TEMAS = [...new Set(LIB.map(c => c.theme))];
+  const prefixo = t => t.includes(" · ") ? t.slice(0, t.indexOf(" · ")) : null;
+  function caminho(t) {
+    const pre = prefixo(t);
+    if (pre) return [TEMAS.find(x => !prefixo(x) && x.startsWith(pre)) || pre, "Estilizados", t.slice(pre.length + 3)];
+    if (TEMAS.some(x => prefixo(x) && t.startsWith(prefixo(x)))) return [t, "Simples"];
+    return [t];
+  }
+  function arvore() {
+    const raiz = { filhos: [] };
+    LIB.forEach(c => {
+      let no = raiz;
+      caminho(c.theme).forEach((titulo, i, cam) => {
+        let f = no.filhos.find(x => x.titulo === titulo);
+        if (!f) no.filhos.push(f = { titulo, chave: cam.slice(0, i + 1).join(" › "), filhos: [], itens: [] });
+        no = f;
+      });
+      no.itens.push(c);
+    });
+    return raiz.filhos;
+  }
   function isSel(id) { return state.sel.some(s => s.id === id); }
   function toggle(id) {
     if (isSel(id)) state.sel = state.sel.filter(s => s.id !== id);
@@ -94,43 +118,54 @@
   function renderList() {
     const q = norm($("#busca").value), lista = $("#lista");
     lista.textContent = "";
-    const groups = [];
-    if (state.custom.length) groups.push(["Meus personagens", state.custom, true]);
-    const themes = [...new Set(LIB.map(c => c.theme))];
-    themes.forEach(t => groups.push([t, LIB.filter(c => c.theme === t), false]));
-    let any = false;
-    groups.forEach(([title, list, mine]) => {
-      const items = list.filter(c => !q || norm(c.name).includes(q) || norm(c.theme).includes(q) || norm(title).includes(q));
-      if (!items.length) return; any = true;
-      // "Meus personagens" fica sempre aberto; com busca, abrem os grupos que têm resultado
-      const aberto = mine || !!q || !!abertos[title];
-      const sec = el("details", { class: "tema" + (mine ? " meus" : "") });
-      sec.open = aberto;
-      const allOn = items.every(c => isSel(c._id)), nSel = items.filter(c => isSel(c._id)).length;
-      const sum = el("summary", { class: "tema-cab" },
-        el("h3", {}, el("span", { text: title }), el("span", { class: "conta", text: ` · ${items.length}` }),
-          nSel ? el("span", { class: "nsel", text: nSel === items.length ? "todos" : `${nSel} na folha` }) : null),
-        el("button", {
-          type: "button", class: "todos", text: allOn ? "tirar todos" : "selecionar todos", onclick: (e) => {
-            e.preventDefault(); e.stopPropagation();
-            if (allOn) state.sel = state.sel.filter(s => !items.some(c => c._id === s.id));
-            else items.forEach(c => { if (!isSel(c._id)) state.sel.push({ id: c._id, qty: c.qty || 1 }); });
-            save(); renderList(); renderSelected(); schedulePreview();
-          }
-        }));
-      if (mine) sum.addEventListener("click", e => { if (!e.target.closest("button")) e.preventDefault(); });
-      sec.append(sum);
-      const corpo = el("div", { class: "tema-corpo" });
-      sec.append(corpo);
-      const preencher = () => { if (!corpo.childElementCount) items.forEach(ch => corpo.append(linhaItem(ch, mine))); };
-      if (aberto) preencher();
-      sec.addEventListener("toggle", () => {
-        if (sec.open) preencher();
-        if (!mine && !q) { if (sec.open) abertos[title] = true; else delete abertos[title]; salvarGrupos(); }
-      });
-      lista.append(sec);
+    const casa = (c, cam) => !q || norm(c.name).includes(q) || cam.some(t => norm(t).includes(q));
+    // filtra a árvore pela busca; grupos sem nenhum personagem somem
+    const filtrar = (no, cam) => {
+      const c2 = [...cam, no.titulo];
+      const filhos = no.filhos.map(f => filtrar(f, c2)).filter(Boolean), itens = no.itens.filter(c => casa(c, [...c2, c.theme]));
+      const todos = [...filhos.flatMap(f => f.todos), ...itens];
+      return todos.length ? { ...no, filhos, itens, todos } : null;
+    };
+    const grupos = [];
+    if (state.custom.length) { const g = filtrar({ titulo: "Meus personagens", chave: "Meus personagens", filhos: [], itens: state.custom }, []); if (g) grupos.push([g, true]); }
+    arvore().forEach(no => { const g = filtrar(no, []); if (g) grupos.push([g, false]); });
+    grupos.forEach(([g, mine]) => lista.append(grupo(g, mine, 0, q)));
+    if (!grupos.length) lista.append(el("p", { class: "vazio", text: "Nenhum personagem encontrado." }));
+  }
+  function grupo(no, mine, nivel, q) {
+    const items = no.todos, title = no.titulo;
+    // todos começam abertos; "Meus personagens" fica sempre aberto; com busca, abrem os grupos que têm resultado
+    const aberto = mine || !!q || !fechados[no.chave];
+    const sec = el("details", { class: "tema" + (mine ? " meus" : "") + (nivel ? " sub" : "") });
+    sec.open = aberto;
+    const allOn = items.every(c => isSel(c._id)), nSel = items.filter(c => isSel(c._id)).length;
+    const sum = el("summary", { class: "tema-cab" },
+      el(nivel ? "h4" : "h3", {}, el("span", { text: title }), el("span", { class: "conta", text: ` · ${items.length}` }),
+        nSel ? el("span", { class: "nsel", text: nSel === items.length ? "todos" : `${nSel} na folha` }) : null),
+      el("button", {
+        type: "button", class: "todos", text: allOn ? "tirar todos" : "selecionar todos", onclick: (e) => {
+          e.preventDefault(); e.stopPropagation();
+          if (allOn) state.sel = state.sel.filter(s => !items.some(c => c._id === s.id));
+          else items.forEach(c => { if (!isSel(c._id)) state.sel.push({ id: c._id, qty: c.qty || 1 }); });
+          save(); renderList(); renderSelected(); schedulePreview();
+        }
+      }));
+    if (mine) sum.addEventListener("click", e => { if (!e.target.closest("button")) e.preventDefault(); });
+    sec.append(sum);
+    const corpo = el("div", { class: "tema-corpo" });
+    sec.append(corpo);
+    const preencher = () => {
+      if (corpo.childElementCount) return;
+      no.filhos.forEach(f => corpo.append(grupo(f, mine, nivel + 1, q)));
+      no.itens.forEach(ch => corpo.append(linhaItem(ch, mine)));
+    };
+    if (aberto) preencher();
+    sec.addEventListener("toggle", e => {
+      if (e.target !== sec) return;
+      if (sec.open) preencher();
+      if (!mine && !q) { if (sec.open) delete fechados[no.chave]; else fechados[no.chave] = true; salvarGrupos(); }
     });
-    if (!any) lista.append(el("p", { class: "vazio", text: "Nenhum personagem encontrado." }));
+    return sec;
   }
   function linhaItem(ch, mine) {
     const sel = isSel(ch._id);
