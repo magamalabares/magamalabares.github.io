@@ -11,6 +11,7 @@ Repositório pessoal de utilitários: calculadoras, scripts e pequenas ferrament
 |---|---|---|
 | 1 | Quanto eu ganho vendendo? Shopee (CPF) e Nuvemshop, regras de nov/2026 | [abrir](vendas/) |
 | 2 | Qual embalagem eu cadastro? Peso e medidas do pacote a partir do produto | [abrir](vendas/embalagem.html) |
+| 3 | Folha de olhinhos para amigurumi (Sinint): PDF A4 com olhos em degradê nos tamanhos exatos | [abrir](olhinhos/) |
 
 ## Estrutura
 
@@ -27,7 +28,15 @@ vendas/
   test.js               ← testes das taxas: node vendas/test.js
   embalagem.html        ← Nº 2 · estimador de embalagem, arquivo único
   test-embalagem.js     ← testes da embalagem: node vendas/test-embalagem.js
+olhinhos/
+  index.html, olhinhos.css  ← Nº 3 · página e estilos próprios
+  olhos.js              ← desenha os olhos, monta a folha A4 e gera o PDF (jsPDF)
+  personagens.js        ← biblioteca de personagens (edite aqui)
+  logo.js               ← logo Sinint obrigatória dos PDFs (SVG)
+  app.js, assets.js, vendor/, fontes/, gerador_olhinhos_sinint.zip
 ```
+
+Os PDFs do Nº 3 saem iguais aos de referência gerados pelo script Python (mesmo texto, posições a até 0,1 mm), inclusive dois detalhes do original: os personagens com quantidade dobrada ficam no fim da seção, e o espaçamento de 0,8 pt do nome vale também para os rótulos 12MM/10MM e para a régua.
 
 As páginas em `vendas/` têm uma cópia do CSS embutida para funcionar sozinhas. Ao mudar o visual, mude `assets/magamalabares.css` e copie para elas.
 

@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nº 3 · Folha de olhinhos · magamalabares</title>
+<meta name="description" content="Monte folhas A4 de olhinhos em degradê para amigurumi (Sinint amigurumis), nos tamanhos exatos, e baixe em PDF.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3Cpattern id='x' width='10' height='10' patternUnits='userSpaceOnUse'%3E%3Crect width='10' height='10' fill='%2333251a'/%3E%3Crect width='5' height='10' fill='%23ff7a8a' fill-opacity='.28'/%3E%3Crect width='10' height='5' fill='%23ff7a8a' fill-opacity='.28'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23x)'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%2333251a'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Arial Rounded MT Bold,Arial Black,sans-serif' font-size='28' fill='%23ff7a8a'%3Em%3C/text%3E%3C/svg%3E">
+<script>try { var t = localStorage.getItem("mg-tema"); if (t === "noite" || t === "dia") document.documentElement.setAttribute("data-tema", t); } catch (e) {}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/magamalabares.css">
+<link rel="stylesheet" href="olhinhos.css">
+</head>
+<body>
+<div class="mg-pagina">
+  <header class="mg-topo">
+    <a class="mg-marca" href="../">magamalabares</a>
+    <div class="mg-tema" role="group" aria-label="Tema">
+      <button type="button" data-tema-opcao="dia" aria-pressed="false">DIA</button>
+      <button type="button" data-tema-opcao="noite" aria-pressed="false">NOITE</button>
+    </div>
+  </header>
+
+  <main class="mg-rotulo">
+    <div class="mg-cabeca">
+      <p class="mg-numero">Variedade Nº 3</p>
+      <h1>Folha de olhinhos para amigurumi</h1>
+      <p class="mg-sub">Sinint amigurumis · PDF A4 em tamanho real</p>
+    </div>
+
+    <div class="ol-grade">
+      <!-- ===================== PERSONAGENS ===================== -->
+      <section class="ol-painel" aria-labelledby="t-pers">
+        <div class="ol-painel-cab">
+          <h2 id="t-pers">Personagens</h2>
+          <button class="mg-botao mg-mini-botao" id="btn-novo" type="button">+ Criar</button>
+        </div>
+        <label class="mg-campo"><span class="ol-oculto">Buscar personagem ou tema</span>
+          <input type="search" id="busca" placeholder="Buscar personagem ou tema" autocomplete="off">
+        </label>
+        <div id="lista" class="lista"></div>
+        <div class="meus-acoes">
+          <button class="mg-botao-sec mg-mini-botao" id="btn-exportar" type="button">Exportar meus personagens</button>
+          <label class="mg-botao-sec mg-mini-botao">Importar<input type="file" id="importar" accept="application/json,.json" hidden></label>
+        </div>
+      </section>
+
+      <!-- ===================== FOLHA ===================== -->
+      <section class="ol-painel" aria-labelledby="t-folha">
+        <div class="ol-painel-cab">
+          <h2 id="t-folha">Sua folha</h2>
+          <button class="mg-botao-sec mg-mini-botao" id="btn-limpar" type="button">Limpar</button>
+        </div>
+
+        <div id="selecionados" class="selecionados" aria-live="polite"></div>
+
+        <fieldset class="tamanhos">
+          <legend>Tamanhos</legend>
+          <div class="ol-pilulas">
+            <label><input type="checkbox" value="12" checked><span>12 mm</span></label>
+            <label><input type="checkbox" value="10" checked><span>10 mm</span></label>
+            <label><input type="checkbox" value="9"><span>9 mm</span></label>
+            <label><input type="checkbox" value="8"><span>8 mm</span></label>
+          </div>
+        </fieldset>
+
+        <details class="mg-sanfona mg-letrinha">
+          <summary>Mais opções</summary>
+          <div class="mg-sanfona-corpo ol-opcoes">
+            <label class="mg-campo">Título da folha <small>(opcional)</small>
+              <input type="text" id="titulo" placeholder="Ex.: Meus favoritos" maxlength="40">
+            </label>
+            <label class="mg-check"><input type="checkbox" id="por-tema" checked><span>Uma folha por tema</span></label>
+            <label class="mg-check"><input type="checkbox" id="alfabetica" checked><span>Ordem alfabética</span></label>
+          </div>
+        </details>
+
+        <div class="previa-wrap">
+          <div class="previa-nav">
+            <button class="mg-botao-sec mg-mini-botao" id="prev" type="button" aria-label="Folha anterior">‹</button>
+            <span id="pag-info">—</span>
+            <button class="mg-botao-sec mg-mini-botao" id="next" type="button" aria-label="Próxima folha">›</button>
+          </div>
+          <canvas id="previa" class="previa" aria-label="Prévia da folha"></canvas>
+          <p class="mg-vazio ol-vazio" id="vazio">Escolha personagens na lista para montar a folha.</p>
+        </div>
+
+        <button class="mg-botao ol-baixar" id="btn-pdf" type="button" disabled>Baixar PDF</button>
+
+        <aside class="mg-nota"><b>BOM SABER</b><span>Imprima em <strong>tamanho real (100%)</strong>, sem “ajustar à página”. A régua no rodapé deve medir 5 cm.</span></aside>
+
+        <details class="mg-sanfona mg-letrinha">
+          <summary>Sobre o gerador</summary>
+          <div class="mg-sanfona-corpo mg-letra-miuda">
+            <p>Os olhos são desenhados no seu navegador; nada é enviado para servidores. Os personagens que você cria ficam salvos neste navegador e podem ser exportados em JSON.</p>
+            <p>Prefere rodar no computador? <a href="gerador_olhinhos_sinint.zip" download>Baixe o gerador em Python (.zip)</a>.</p>
+            <p>Fontes Fredoka e Quicksand (SIL OFL) e jsPDF (MIT): licenças na pasta <code>fontes/</code> e <code>vendor/</code>.</p>
+          </div>
+        </details>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== EDITOR ===================== -->
+<dialog id="editor" class="editor" aria-labelledby="ed-titulo">
+  <form method="dialog" id="ed-form">
+    <div class="ed-cab">
+      <h2 id="ed-titulo">Novo personagem</h2>
+      <button class="mg-x" value="cancel" type="submit" aria-label="Fechar">✕</button>
+    </div>
+    <div class="ed-corpo">
+      <div class="ed-previa">
+        <div class="par-grande"><canvas id="ed-o0" width="320" height="320"></canvas><canvas id="ed-o1" width="320" height="320"></canvas></div>
+        <div class="faixa-amostra" id="ed-faixa">NOME</div>
+        <div class="tam-real"><span>Tamanho real (12 mm):</span><canvas id="ed-r0" width="96" height="96"></canvas><canvas id="ed-r1" width="96" height="96"></canvas></div>
+      </div>
+
+      <div class="ed-campos">
+        <div class="mg-par">
+          <label class="mg-campo">Nome<input type="text" id="ed-nome" required maxlength="24" placeholder="Ex.: ANYA"></label>
+          <label class="mg-campo">Tema<input type="text" id="ed-tema" list="temas" maxlength="40" placeholder="Ex.: Spy x Family"></label>
+          <datalist id="temas"></datalist>
+        </div>
+
+        <fieldset class="bloco">
+          <legend>Degradê <small>(do topo para a base da íris)</small></legend>
+          <div class="barra" id="ed-barra"></div>
+          <div id="ed-cores"></div>
+          <div class="linha-acoes">
+            <button class="mg-botao-sec mg-mini-botao" type="button" id="ed-add">+ Cor</button>
+            <button class="mg-botao-sec mg-mini-botao" type="button" id="ed-distribuir">Distribuir igualmente</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="bloco">
+          <legend>Faixa do nome</legend>
+          <div class="linha"><input type="color" id="ed-faixa-cor" aria-label="Cor da faixa"><button class="mg-botao-sec mg-mini-botao" type="button" id="ed-faixa-auto">Usar a cor do meio</button></div>
+        </fieldset>
+
+        <fieldset class="bloco" id="ed-efeitos">
+          <legend>Efeitos suaves</legend>
+        </fieldset>
+
+        <fieldset class="bloco">
+          <legend>Quantidade</legend>
+          <label class="chk"><input type="radio" name="ed-qty" value="1" checked> Normal (12 olhos de cada tamanho)</label>
+          <label class="chk"><input type="radio" name="ed-qty" value="2"> Dobro (24 olhos de cada tamanho)</label>
+        </fieldset>
+      </div>
+    </div>
+    <p class="erro" id="ed-erro" role="alert"></p>
+    <div class="ed-rodape">
+      <button class="mg-botao-sec" value="cancel" type="submit">Cancelar</button>
+      <button class="mg-botao" id="ed-salvar" type="button">Salvar personagem</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="../assets/magamalabares.js"></script>
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="assets.js"></script>
+<script src="logo.js"></script>
+<script src="personagens.js"></script>
+<script src="olhos.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
