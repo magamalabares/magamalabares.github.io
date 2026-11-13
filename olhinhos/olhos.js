@@ -11,7 +11,7 @@
   const TOP = 20;                       // início do conteúdo (abaixo da logo)
   const BOTTOM_LIMIT = H - 24;          // conteúdo não passa daqui (rodapé com a régua)
   const PT = 25.4 / 72;                 // 1 pt em mm
-  const EYE_PX = 720;                   // resolução de cada olho (≈1500 DPI em 12 mm)
+  const EYE_PX = 900;                   // resolução de cada olho (≈1900 DPI em 12 mm)
 
   // ---------- cores ----------
   function hexToRgb(h) {
@@ -543,14 +543,15 @@
       // faixa do nome
       const x0 = 6, x1 = W - 6, hgt = 8;
       P.band(x0, y, x1 - x0, hgt, hc);
-      P.stitch(x0 + 1.1, y + 1.1, x1 - x0 - 2.2, hgt - 2.2, 2.9);
+      P.stitch(x0 + 1.1, y + 1.1, x1 - x0 - 2.2, hgt - 2.2, 2.9, x => corFaixa(hc, (x - x0) / (x1 - x0)));
       const cs = 0.8 * PT, size = 13.5;
       const tw = P.textWidth(ch.name, "Fredoka", size) + cs * (ch.name.length - 1);
       P.text(ch.name, W / 2 - tw / 2, y + hgt / 2 + 1.65, { font: "Fredoka", size, color: "#FFFFFF", charSpace: cs });
       resto = cs;
       [-1, 1].forEach(sx => {
-        P.poly(sparklePts(W / 2 + sx * (tw / 2 + 4.2), y + hgt / 2, 1.05), "#FFFFFF", 0.85);
-        P.poly(sparklePts(W / 2 + sx * (tw / 2 + 7), y + hgt / 2 - 0.3, 0.6), "#FFFFFF", 0.5);
+        const xa = W / 2 + sx * (tw / 2 + 4.2), xb = W / 2 + sx * (tw / 2 + 7);
+        P.poly(sparklePts(xa, y + hgt / 2, 1.05), "#FFFFFF", 0.85, corFaixa(hc, (xa - x0) / (x1 - x0)));
+        P.poly(sparklePts(xb, y + hgt / 2 - 0.3, 0.6), "#FFFFFF", 0.5, corFaixa(hc, (xb - x0) / (x1 - x0)));
       });
       // linhas de olhos
       let yy = y + 8 + 3.5;
@@ -603,7 +604,67 @@
     x.fillStyle = g; x.fillRect(0, 0, 1200, 48); return c;
   }
 
+  // cor da faixa na posição t (0–1), interpolando os stops em sRGB como o gradiente do canvas
+  function corFaixa(hc, t) {
+    const st = bandStops(hc); t = Math.min(1, Math.max(0, t));
+    let i = 1; while (i < st.length - 1 && st[i][0] < t) i++;
+    const [t0, c0] = st[i - 1], [t1, c1] = st[i], k = t1 > t0 ? (t - t0) / (t1 - t0) : 0;
+    const a = hexToRgb(c0), b = hexToRgb(c1);
+    return rgbToHex(...a.map((v, j) => v + (b[j] - v) * k));
+  }
+  // "cor por cima com opacidade a" misturada à mão (o PDF fica sem transparência)
+  function misturar(cor, fundo, a) {
+    const c = hexToRgb(cor), f = hexToRgb(fundo);
+    return rgbToHex(...c.map((v, j) => f[j] + (v - f[j]) * a));
+  }
+
+  // SVG simples (path com M/L/H/V/Q/C/Z, polygon, rotate) desenhado como vetor no jsPDF, cor sólida.
+  function svgNoPdf(doc, svg, x, y, h) {
+    const vb = /viewBox="([\d.\-]+) ([\d.\-]+) ([\d.]+) ([\d.]+)"/.exec(svg).slice(1).map(Number), k = h / vb[3];
+    const el = /<(path|polygon)\b([^>]*)\/?>/g; let m;
+    while ((m = el.exec(svg))) {
+      const at = n => { const r = new RegExp(`\\b${n}="([^"]*)"`).exec(m[2]); return r ? r[1] : null; };
+      let tf = p => p;
+      const rot = /rotate\(([\d.\-]+)[ ,]+([\d.\-]+)[ ,]+([\d.\-]+)\)/.exec(at("transform") || "");
+      if (rot) {
+        const a = +rot[1] * Math.PI / 180, cx = +rot[2], cy = +rot[3], co = Math.cos(a), si = Math.sin(a);
+        tf = ([px, py]) => [cx + (px - cx) * co - (py - cy) * si, cy + (px - cx) * si + (py - cy) * co];
+      }
+      const pt = (px, py) => { const [u, v] = tf([px, py]); return [x + (u - vb[0]) * k, y + (v - vb[1]) * k]; };
+      doc.setFillColor(at("fill") || "#000000");
+      if (m[1] === "polygon") {
+        const n = at("points").trim().split(/[\s,]+/).map(Number);
+        for (let i = 0; i < n.length; i += 2) { const [u, v] = pt(n[i], n[i + 1]); i ? doc.lineTo(u, v) : doc.moveTo(u, v); }
+        doc.close();
+      } else {
+        const tk = at("d").match(/[A-Za-z]|-?(?:\d+\.?\d*|\.\d+)(?:e-?\d+)?/g);
+        let i = 0, cmd = "", cx = 0, cy = 0, sx = 0, sy = 0;
+        const num = () => +tk[i++];
+        while (i < tk.length) {
+          if (/[A-Za-z]/.test(tk[i])) cmd = tk[i++];
+          const rel = cmd === cmd.toLowerCase(), C = cmd.toUpperCase(), ox = rel ? cx : 0, oy = rel ? cy : 0;
+          if (C === "Z") { doc.close(); cx = sx; cy = sy; continue; }
+          if (C === "M") { cx = ox + num(); cy = oy + num(); sx = cx; sy = cy; doc.moveTo(...pt(cx, cy)); cmd = rel ? "l" : "L"; }
+          else if (C === "L") { cx = ox + num(); cy = oy + num(); doc.lineTo(...pt(cx, cy)); }
+          else if (C === "H") { cx = ox + num(); doc.lineTo(...pt(cx, cy)); }
+          else if (C === "V") { cy = oy + num(); doc.lineTo(...pt(cx, cy)); }
+          else if (C === "Q") {
+            const qx = ox + num(), qy = oy + num(), ex = ox + num(), ey = oy + num();
+            doc.curveTo(...pt(cx + 2 / 3 * (qx - cx), cy + 2 / 3 * (qy - cy)), ...pt(ex + 2 / 3 * (qx - ex), ey + 2 / 3 * (qy - ey)), ...pt(ex, ey));
+            cx = ex; cy = ey;
+          } else if (C === "C") {
+            const a1 = ox + num(), b1 = oy + num(), a2 = ox + num(), b2 = oy + num(); cx = ox + num(); cy = oy + num();
+            doc.curveTo(...pt(a1, b1), ...pt(a2, b2), ...pt(cx, cy));
+          } else throw new Error("comando SVG não suportado: " + cmd);
+        }
+      }
+      doc.fill();
+    }
+  }
+
   // ---------- PDF ----------
+  // Sem nenhuma transparência (sem GState, sem imagem com alfa): drivers de jato de tinta "achatam"
+  // camadas semitransparentes em degraus e aparecem listras nos esfumados.
   async function buildPDF(chars, opts, onProgress) {
     const { jsPDF } = window.jspdf, A = window.SININT_ASSETS;
     const doc = new jsPDF({ unit: "mm", format: "a4", compress: true });
@@ -612,8 +673,6 @@
     doc.addFileToVFS("Quicksand-Bold.ttf", A.quicksandBold); doc.addFont("Quicksand-Bold.ttf", "Quicksand", "bold");
     await carregarKanji();
     const logo = await logoCanvas(), selo = await seloCanvas();
-    const png = new Map();
-    const pngDe = c => { if (!png.has(c)) png.set(c, c.toDataURL("image/png")); return png.get(c); };
     const pages = paginate(chars, opts);
     const cache = new Map(), bands = new Map();
     let done = 0; const total = chars.length;
@@ -622,10 +681,10 @@
       if (!cache.has(key)) cache.set(key, { key, data: renderEye(ch, s, EYE_PX, { background: "#FFFFFF" }).toDataURL("image/jpeg", 0.95) });
       return cache.get(key);
     };
-    const gs = (o) => new doc.GState(o);
     const P = {
       logo, logoRatio: logo.width / logo.height, selo, seloRatio: selo ? selo.width / selo.height : 1,
-      image(img, x, y, w, h, key) { doc.addImage(pngDe(img), "PNG", x, y, w, h, key); },
+      // logo e selo entram como vetor (cores sólidas), direto dos SVGs de logo.js
+      image(img, x, y, w, h, key) { svgNoPdf(doc, key === "selo" ? window.SININT_SELO_SVG : window.SININT_LOGO_SVG, x, y, h); },
       text(t, x, y, o) {
         doc.setFont(o.font, o.bold ? "bold" : "normal"); doc.setFontSize(o.size); doc.setTextColor(o.color);
         doc.text(t, x, y, { align: o.align || "left", charSpace: o.charSpace || 0 });
@@ -636,13 +695,23 @@
         doc.saveGraphicsState(); doc.roundedRect(x, y, w, h, h / 2, h / 2, null); doc.clip(); doc.discardPath();
         doc.addImage(bands.get(hc), "JPEG", x, y, w, h, "band" + hc); doc.restoreGraphicsState();
       },
-      stitch(x, y, w, h, rad) {
-        doc.saveGraphicsState(); doc.setGState(gs({ "stroke-opacity": 0.42 }));
-        doc.setDrawColor("#FFFFFF"); doc.setLineWidth(0.45 * PT); doc.setLineDashPattern([2.2 * PT, 1.8 * PT], 0);
-        doc.roundedRect(x, y, w, h, rad, rad, "S"); doc.setLineDashPattern([], 0); doc.restoreGraphicsState();
+      // pesponto branco a 42% sobre a faixa: como a faixa é um degradê, o contorno é desenhado em fatias
+      // verticais (recorte), cada uma com a cor já misturada; fatias vizinhas da mesma cor se juntam
+      stitch(x, y, w, h, rad, fundo) {
+        const passo = 0.5, lw = 0.45 * PT, fatias = [];
+        for (let a = x - lw; a < x + w + lw; a += passo) {
+          const cor = misturar("#FFFFFF", fundo(a + passo / 2), 0.42), u = fatias[fatias.length - 1];
+          if (u && u.cor === cor) u.b = a + passo; else fatias.push({ a, b: a + passo, cor });
+        }
+        doc.setLineWidth(lw); doc.setLineDashPattern([2.2 * PT, 1.8 * PT], 0);
+        fatias.forEach(f => {
+          doc.saveGraphicsState(); doc.rect(f.a, y - 1, f.b - f.a, h + 2, null); doc.clip(); doc.discardPath();
+          doc.setDrawColor(f.cor); doc.roundedRect(x, y, w, h, rad, rad, "S"); doc.restoreGraphicsState();
+        });
+        doc.setLineDashPattern([], 0);
       },
-      poly(pts, color, alpha) {
-        doc.saveGraphicsState(); doc.setGState(gs({ opacity: alpha })); doc.setFillColor(color);
+      poly(pts, color, alpha, fundo) {
+        doc.saveGraphicsState(); doc.setFillColor(misturar(color, fundo || "#FFFFFF", alpha));
         const lines = pts.slice(1).map((p, i) => [p[0] - pts[i][0], p[1] - pts[i][1]]);
         doc.lines(lines, pts[0][0], pts[0][1], [1, 1], "F", true); doc.restoreGraphicsState();
       },
@@ -656,7 +725,7 @@
     };
     for (let i = 0; i < pages.length; i++) {
       if (i) doc.addPage();
-      drawPage(P, pages[i], (ch, side) => { const im = eyeImg(ch, side); return im; });
+      drawPage(P, pages[i], eyeImg);
       done = Math.min(total, done + pages[i].blocks.length);
       if (onProgress) onProgress(i + 1, pages.length);
       await new Promise(r => setTimeout(r, 0));   // deixa a tela respirar

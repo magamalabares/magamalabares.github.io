@@ -549,8 +549,7 @@
     $("#por-tema").checked = state.settings.byTheme;
     $("#por-tema").addEventListener("change", e => { state.settings.byTheme = e.target.checked; save(); pageIdx = 0; schedulePreview(); });
     $("#alfabetica").checked = state.settings.alphabetical;
-    $("#alfabetica").addEventListener("change", e => { state.settings.alphabetical = e.target.checked; save(); schedulePreview(); });
-    $("#btn-exportar").addEventListener("click", exportCustom);
+    $("#alfabetica").addEventListener("change", e => { state.settings.alphabetical = e.target.checked; save(); schedulePreview(); });    $("#btn-exportar").addEventListener("click", exportCustom);
     $("#importar").addEventListener("change", e => { if (e.target.files[0]) importCustom(e.target.files[0]); e.target.value = ""; });
     $("#ed-salvar").addEventListener("click", saveEditor);
     $("#ed-nome").addEventListener("input", updateEditorPreview);

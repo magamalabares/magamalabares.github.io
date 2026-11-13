@@ -174,3 +174,4 @@
   .ed-previa .faixa-amostra { font-size: 13px; padding: 2px 8px; }
   .ed-previa .tam-real { display: none; }
 }
+#ed-motivos .mg-segmento + .mg-check { margin-top: 14px; }
