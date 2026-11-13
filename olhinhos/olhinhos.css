@@ -153,3 +153,24 @@
 #ed-motivos .linha { margin-bottom: 4px; }
 #ed-estrias-params { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 6px 14px; margin: 6px 0 0 30px; }
 #ed-motivos .mg-segmento { max-width: 340px; }
+
+/* ---------- Motifs: galeria com prévias e miniatura em cada motif ---------- */
+.ol-galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; margin-bottom: 4px; }
+.ol-motif {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px 6px; cursor: pointer;
+  border: 2px solid var(--mg-borda); border-radius: 6px; background: var(--mg-campo); color: var(--mg-texto);
+  font: 700 11px/1.2 var(--mg-fonte-texto); text-align: center;
+}
+.ol-motif img { width: 56px; height: 56px; border-radius: 50%; display: block; }
+.ol-motif:hover { border-color: var(--mg-destaque); color: var(--mg-destaque); }
+.ol-motif:focus-visible { outline: 2px solid var(--mg-destaque); outline-offset: 2px; }
+.camada-nome { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.camada-mini { width: 44px; height: 44px; border-radius: 50%; flex: 0 0 auto; }
+.ol-rotulo small { font-weight: 400; color: var(--mg-suave); }
+/* no celular, a prévia fixa do editor fica compacta para não cobrir os controles */
+@media (max-width: 760px) {
+  .ed-previa { padding: 8px; gap: 6px; z-index: 2; grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+  .par-grande canvas { width: 64px; max-width: 64px; }
+  .ed-previa .faixa-amostra { font-size: 13px; padding: 2px 8px; }
+  .ed-previa .tam-real { display: none; }
+}

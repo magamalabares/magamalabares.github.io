@@ -134,14 +134,14 @@
 
         <fieldset class="bloco">
           <legend>Olhos do par</legend>
-          <label class="mg-check"><input type="checkbox" id="ed-diferentes"><span>Olhos diferentes no par <small>(o direito com degradê e motivos próprios)</small></span></label>
+          <label class="mg-check"><input type="checkbox" id="ed-diferentes"><span>Olhos diferentes no par <small>(o direito com degradê e motifs próprios)</small></span></label>
           <div id="ed-direito" hidden>
             <p class="ol-rotulo">Degradê do olho direito</p>
             <div class="barra" id="ed-barra2"></div>
             <div id="ed-cores2"></div>
             <div class="linha-acoes"><button class="mg-botao-sec mg-mini-botao" type="button" id="ed-add2">+ Cor</button></div>
           </div>
-          <label class="mg-check"><input type="checkbox" id="ed-espelhar" checked><span>Espelhar motivos no olho direito <small>(névoa, brilhinhos, lua, pétalas…)</small></span></label>
+          <label class="mg-check"><input type="checkbox" id="ed-espelhar" checked><span>Espelhar motifs no olho direito <small>(névoa, brilhinhos, lua, pétalas…)</small></span></label>
         </fieldset>
 
         <fieldset class="bloco">
@@ -154,15 +154,11 @@
         </fieldset>
 
         <fieldset class="bloco" id="ed-motivos">
-          <legend>Motivos</legend>
+          <legend>Motifs</legend>
           <div id="ed-camadas"></div>
-          <div class="linha">
-            <label class="mg-campo ol-add"><span class="ol-oculto">Motivo</span>
-              <select id="ed-novo-motivo"></select>
-            </label>
-            <button class="mg-botao-sec mg-mini-botao" type="button" id="ed-add-motivo">+ Adicionar motivo</button>
-          </div>
-          <p class="ol-rotulo">Intensidade geral dos motivos</p>
+          <p class="ol-rotulo">Adicionar motif <small>(clique na prévia)</small></p>
+          <div class="ol-galeria" id="ed-galeria" role="group" aria-label="Adicionar motif"></div>
+          <p class="ol-rotulo">Intensidade geral dos motifs</p>
           <div class="mg-segmento">
             <label><input type="radio" name="ed-tom" value="1" checked><span>100%</span></label>
             <label><input type="radio" name="ed-tom" value="0.5"><span>50% · realista</span></label>

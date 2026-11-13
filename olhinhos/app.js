@@ -277,7 +277,7 @@
     if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
     $("#ed-nome").focus();
   }
-  function buildAll() { buildStops(""); buildStops("2"); buildFaixaTopo(); buildDiferentes(); buildEffects(); buildCamadas(); buildEstrias(); }
+  function buildAll() { buildStops(""); buildStops("2"); buildFaixaTopo(); buildDiferentes(); buildEffects(); buildCamadas(); buildEstrias(); galeriaChave = ""; buildGaleria(); }
   function syncLinked(rebuild) {
     const last = draft.colors.length - 1, mid = Math.floor(draft.colors.length / 2);
     if (link.top && draft.fx.top) draft.fx.top.color = draft.colors[0];
@@ -358,7 +358,27 @@
       fs.append(wrap);
     });
   }
-  // ---------- motivos (camadas) ----------
+  // ---------- motifs (camadas) ----------
+  // prévia de um motif isolado: o degradê do personagem + só aquela camada
+  function previaMotif(L, px) {
+    const lado = L.lado === "d" && Array.isArray(draft.colors2) ? 1 : 0;
+    return O.renderEye({ colors: draft.colors, stops: draft.stops, colors2: draft.colors2, stops2: draft.stops2, tom: draft.tom, espelhar: draft.espelhar, camadas: [L] }, lado, px);
+  }
+  // galeria para adicionar: uma prévia de cada motif com os valores padrão, no degradê atual
+  let galeriaChave = "";
+  function buildGaleria() {
+    const chave = JSON.stringify([draft.colors, draft.stops, draft.tom]); if (chave === galeriaChave) return;
+    galeriaChave = chave;
+    const box = $("#ed-galeria"); box.textContent = "";
+    Object.entries(MOTIVOS).filter(([, M]) => !M.interno).forEach(([t, M]) => {
+      const img = el("img", { src: previaMotif({ t, ...clone(M.def) }, 112).toDataURL(), alt: "", width: "56", height: "56" });
+      box.append(el("button", { type: "button", class: "ol-motif", "aria-label": "Adicionar motif " + M.nome, title: M.nome, onclick: () => addMotivo(t) }, img, el("span", { text: M.nome })));
+    });
+  }
+  let miniCamadas = [];
+  function redesenharMinis() {
+    miniCamadas.forEach(([cv, L]) => { const x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height); x.drawImage(previaMotif(L, cv.width), 0, 0); });
+  }
   function slider(label, valor, mn, mx, st, aoMudar) {
     const input = el("input", { type: "range", min: String(mn), max: String(mx), step: String(st), value: String(valor) });
     input.addEventListener("input", () => { aoMudar(parseFloat(input.value)); updateEditorPreview(); });
@@ -369,12 +389,14 @@
     b.disabled = !!desligado; return b;
   }
   function buildCamadas() {
-    const box = $("#ed-camadas"); box.textContent = "";
+    const box = $("#ed-camadas"); box.textContent = ""; miniCamadas = [];
     const visiveis = draft.camadas.map((L, i) => [L, i]).filter(([L]) => L.t !== "estrias");
-    if (!visiveis.length) box.append(el("p", { class: "ol-dica", text: "Nenhum motivo. Escolha um abaixo e clique em “Adicionar motivo”." }));
+    if (!visiveis.length) box.append(el("p", { class: "ol-dica", text: "Nenhum motif ainda. Clique numa prévia abaixo para adicionar." }));
     visiveis.forEach(([L, i], pos) => {
       const M = MOTIVOS[L.t] || { nome: L.t, tam: ESC };
-      const cab = el("div", { class: "camada-cab" }, el("b", { text: M.nome }),
+      const mini = el("canvas", { class: "camada-mini", width: "112", height: "112", "aria-hidden": "true" });
+      miniCamadas.push([mini, L]);
+      const cab = el("div", { class: "camada-cab" }, el("span", { class: "camada-nome" }, mini, el("b", { text: M.nome })),
         el("span", { class: "camada-acoes" },
           botao("↑", "Subir " + M.nome, pos === 0, () => mover(i, -1)),
           botao("↓", "Descer " + M.nome, pos === visiveis.length - 1, () => mover(i, 1)),
@@ -405,6 +427,7 @@
       }
       box.append(el("div", { class: "camada" }, cab, params));
     });
+    redesenharMinis();
   }
   function mover(i, d) {
     const vis = draft.camadas.map((L, k) => k).filter(k => draft.camadas[k].t !== "estrias"), p = vis.indexOf(i), j = vis[p + d];
@@ -437,8 +460,11 @@
       if (Array.isArray(ch.colors2)) $("#ed-barra2").style.background = barra(ch.colors2, ch.stops2);
       [["#ed-o0", 0], ["#ed-o1", 1], ["#ed-r0", 0], ["#ed-r1", 1]].forEach(([id, s]) => { const cv = $(id), x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height); x.drawImage(O.renderEye(ch, s, cv.width), 0, 0); });
       const f = $("#ed-faixa"); f.style.background = bandCss(draft.band); f.textContent = (ch.name || "NOME").toUpperCase();
+      redesenharMinis();
+      clearTimeout(galeriaTimer); galeriaTimer = setTimeout(buildGaleria, 400);   // a galeria acompanha o degradê sem travar os controles
     });
   }
+  let galeriaTimer = 0;
   function saveEditor() {
     const name = $("#ed-nome").value.trim().toUpperCase();
     if (!name) { $("#ed-erro").textContent = "Dê um nome ao personagem."; $("#ed-nome").focus(); return; }
@@ -544,9 +570,6 @@
     $("#ed-estrias").addEventListener("change", e => setEstrias(e.target.checked));
     $("#ed-estrias-cor").addEventListener("input", e => { draft.camadas.filter(l => l.t === "estrias").forEach(l => l.cor = e.target.value.toUpperCase()); updateEditorPreview(); });
     $("#ed-estrias-pico").addEventListener("input", e => { draft.camadas.filter(l => l.t === "estrias").forEach(l => l.pico = parseFloat(e.target.value)); updateEditorPreview(); });
-    const selM = $("#ed-novo-motivo");
-    Object.entries(MOTIVOS).filter(([, M]) => !M.interno).forEach(([t, M]) => selM.append(el("option", { value: t, text: M.nome })));
-    $("#ed-add-motivo").addEventListener("click", () => addMotivo(selM.value));
     $("#ed-faixa-auto").addEventListener("click", () => { link.band = true; draft.band = draft.colors[Math.floor(draft.colors.length / 2)]; $("#ed-faixa-cor").value = draft.band.toLowerCase(); updateEditorPreview(); });
     window.addEventListener("resize", schedulePreview);
   }
