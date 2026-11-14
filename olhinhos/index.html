@@ -68,7 +68,12 @@
               <input type="text" id="titulo" placeholder="Ex.: Meus favoritos" maxlength="40">
             </label>
             <label class="mg-check"><input type="checkbox" id="por-tema" checked><span>Uma folha por tema</span></label>
-            <label class="mg-check"><input type="checkbox" id="alfabetica" checked><span>Ordem alfabética</span></label>          </div>
+            <label class="mg-check"><input type="checkbox" id="alfabetica" checked><span>Ordem alfabética</span></label>
+            <fieldset class="ol-visiveis">
+              <legend>Temas na lista <small>(desmarque para ocultar)</small></legend>
+              <div id="temas-visiveis"></div>
+            </fieldset>
+          </div>
         </details>
 
         <div class="previa-wrap">
@@ -180,6 +185,7 @@
     </div>
     <p class="erro" id="ed-erro" role="alert"></p>
     <div class="ed-rodape">
+      <button class="mg-botao-sec" id="ed-restaurar" type="button" hidden>Restaurar padrão</button>
       <button class="mg-botao-sec" value="cancel" type="submit" formnovalidate>Cancelar</button>
       <button class="mg-botao" id="ed-salvar" type="button">Salvar personagem</button>
     </div>

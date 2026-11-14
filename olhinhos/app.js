@@ -35,15 +35,27 @@
   // linha dividida: liga as duas metades aos personagens da biblioteca
   LIB.forEach(c => { if (Array.isArray(c.split)) c._metades = c.split.map(id => LIB.find(x => x._id === "lib:" + id)).filter(Boolean); if (c._metades && c._metades.length !== 2) delete c._metades; });
   const bandCss = b => b.includes("|") ? `linear-gradient(90deg, ${b.split("|")[0]} 44%, ${b.split("|")[1]} 56%)` : b;
-  let state = { custom: [], sel: [], settings: { title: "", sizes: [12, 10], byTheme: true, alphabetical: true } };
+  // editados: personagens da biblioteca alterados pela própria pessoa ({ id: dados }); "restaurar padrão" apaga a entrada
+  let state = { custom: [], sel: [], editados: {}, settings: { title: "", sizes: [12, 10], byTheme: true, alphabetical: true, ocultos: [] } };
   try {
     const saved = JSON.parse(localStorage.getItem(STORE) || "null");
     if (saved && typeof saved === "object") {
       if (Array.isArray(saved.custom)) state.custom = saved.custom.filter(validChar);
       if (Array.isArray(saved.sel)) state.sel = saved.sel;
       if (saved.settings) state.settings = { ...state.settings, ...saved.settings };
+      if (saved.editados && typeof saved.editados === "object")
+        Object.entries(saved.editados).forEach(([id, c]) => { if (validChar(c) && LIB.some(x => x._id === id)) state.editados[id] = c; });
     }
   } catch (e) { /* sem armazenamento: segue sem lembrar */ }
+  if (!Array.isArray(state.settings.ocultos)) state.settings.ocultos = [];
+  // versão original de cada personagem da biblioteca, para restaurar
+  const ORIGINAL = new Map(LIB.map(c => [c._id, c]));
+  let versao = 0;   // muda a chave do cache das miniaturas a cada edição/restauração
+  function aplicarEdicao(id) {
+    const i = LIB.findIndex(c => c._id === id), orig = ORIGINAL.get(id), ed = state.editados[id];
+    LIB[i] = ed ? { ...clone(ed), theme: orig.theme, _id: id, _v: ++versao, _editado: true } : { ...orig, _v: ++versao };
+  }
+  Object.keys(state.editados).forEach(aplicarEdicao);
   // Tamanhos disponíveis. Configurações antigas (com 9 mm, que saiu) caem para o que ainda existe.
   const TAMANHOS = [14, 12, 10, 8, 6];
   state.settings.sizes = (Array.isArray(state.settings.sizes) ? state.settings.sizes : []).map(Number).filter(s => TAMANHOS.includes(s));
@@ -54,8 +66,11 @@
   const byId = id => allChars().find(c => c._id === id);
   state.sel = state.sel.filter(s => byId(s.id));
 
-  const degradeOk = (cols, st) => Array.isArray(cols) && cols.length >= 2 && Array.isArray(st) && st.length === cols.length &&
-    cols.every(x => /^#[0-9a-f]{6}$/i.test(x)) && st.every(x => typeof x === "number" && x >= 0 && x <= 100);
+  // declarações de função (içadas): são usadas ao ler o que ficou salvo, antes deste ponto do arquivo
+  function degradeOk(cols, st) {
+    return Array.isArray(cols) && cols.length >= 2 && Array.isArray(st) && st.length === cols.length &&
+      cols.every(x => /^#[0-9a-f]{6}$/i.test(x)) && st.every(x => typeof x === "number" && x >= 0 && x <= 100);
+  }
   function validChar(c) {
     return !!c && typeof c.name === "string" && degradeOk(c.colors, c.stops) &&
       (c.colors2 == null || degradeOk(c.colors2, c.stops2)) &&
@@ -114,6 +129,29 @@
     });
     return raiz.filhos;
   }
+  // personagem de um tema oculto (ele mesmo ou algum nível acima): some da lista, dos chips e da folha
+  function oculto(ch) {
+    if (!ch._id.startsWith("lib:") || !state.settings.ocultos.length) return false;
+    const cam = caminho(ch.theme);
+    return cam.some((_, i) => state.settings.ocultos.includes(cam.slice(0, i + 1).join(" › ")));
+  }
+  // opções › "Temas na lista": uma caixinha por aba e subaba (desmarcar a aba de cima oculta tudo dentro dela)
+  function renderVisiveis() {
+    const box = $("#temas-visiveis"); box.textContent = "";
+    const ramo = (nos, nivel, paiOculto) => nos.forEach(no => {
+      const oc = state.settings.ocultos.includes(no.chave);
+      const cb = el("input", { type: "checkbox" }); cb.checked = !oc && !paiOculto; cb.disabled = paiOculto;
+      cb.addEventListener("change", () => {
+        const o = state.settings.ocultos.filter(k => k !== no.chave);
+        if (!cb.checked) o.push(no.chave);
+        state.settings.ocultos = o; save(); renderVisiveis(); renderList(); renderSelected(); pageIdx = 0; schedulePreview();
+      });
+      const n = no.filhos.length ? no.filhos.reduce(function conta(a, f) { return a + f.itens.length + f.filhos.reduce(conta, 0); }, no.itens.length) : no.itens.length;
+      box.append(el("label", { class: "mg-check" + (nivel ? " sub" : ""), style: `--nivel:${nivel}` }, cb, el("span", { text: `${no.titulo} · ${n}` })));
+      ramo(no.filhos, nivel + 1, paiOculto || oc);
+    });
+    ramo(arvore(), 0, false);
+  }
   function isSel(id) { return state.sel.some(s => s.id === id); }
   function toggle(id) {
     if (isSel(id)) state.sel = state.sel.filter(s => s.id !== id);
@@ -126,6 +164,7 @@
     const casa = (c, cam) => !q || norm(c.name).includes(q) || cam.some(t => norm(t).includes(q));
     // filtra a árvore pela busca; grupos sem nenhum personagem somem
     const filtrar = (no, cam) => {
+      if (state.settings.ocultos.includes(no.chave)) return null;   // tema oculto nas opções
       const c2 = [...cam, no.titulo];
       const filhos = no.filhos.map(f => filtrar(f, c2)).filter(Boolean), itens = no.itens.filter(c => casa(c, [...c2, c.theme]));
       const todos = [...filhos.flatMap(f => f.todos), ...itens];
@@ -175,8 +214,11 @@
   function linhaItem(ch, mine) {
     const sel = isSel(ch._id);
     const row = el("div", { class: "item" + (sel ? " sel" : ""), role: "checkbox", "aria-checked": String(sel), tabindex: "0", title: ch.theme || "" },
-      el("span", { class: "check", "aria-hidden": "true", text: sel ? "✓" : "" }), miniEyes(ch), el("span", { class: "nome", text: ch.name }),
-      ch._metades ? null : el("button", { class: "acao", type: "button", text: mine ? "editar" : "editar cópia", onclick: (e) => { e.stopPropagation(); openEditor(ch); } }),
+      el("span", { class: "check", "aria-hidden": "true", text: sel ? "✓" : "" }), miniEyes(ch),
+      el("span", { class: "nome" }, ch.name, ch._editado ? el("span", { class: "editado", title: "Editado por você", text: "editado" }) : null),
+      ch._metades ? null : el("button", { class: "acao", type: "button", text: "editar", "aria-label": "Editar " + ch.name, onclick: (e) => { e.stopPropagation(); openEditor(ch); } }),
+      mine || ch._metades ? null : el("button", { class: "acao", type: "button", text: "copiar", "aria-label": "Copiar " + ch.name + " para Meus personagens", onclick: (e) => { e.stopPropagation(); openEditor(ch, true); } }),
+      ch._editado ? el("button", { class: "acao", type: "button", text: "↺", title: "Restaurar padrão", "aria-label": "Restaurar padrão de " + ch.name, onclick: (e) => { e.stopPropagation(); restaurar(ch._id); } }) : null,
       mine ? el("button", {
         class: "acao", type: "button", text: "excluir", "aria-label": "Excluir " + ch.name, onclick: async (e) => {
           e.stopPropagation();
@@ -194,18 +236,18 @@
   function renderSelected() {
     const box = $("#selecionados"); box.textContent = "";
     state.sel.forEach(s => {
-      const ch = byId(s.id); if (!ch) return;
+      const ch = byId(s.id); if (!ch || oculto(ch)) return;
       box.append(el("span", { class: "chip", style: `background:${bandCss(ch.band)}` }, ch.name,
         el("button", { type: "button", title: "Quantidade de olhinhos", text: s.qty === 2 ? "2×" : "1×", onclick: () => { s.qty = s.qty === 2 ? 1 : 2; save(); renderSelected(); schedulePreview(); } }),
         el("button", { type: "button", "aria-label": "Remover " + ch.name, text: "✕", onclick: () => toggle(s.id) })));
     });
-    $("#btn-pdf").disabled = !state.sel.length;
+    $("#btn-pdf").disabled = !selectedChars().length;
   }
 
   // ---------- prévia da folha ----------
   let pages = [], pageIdx = 0, prevTimer = 0;
   const opts = () => ({ ...state.settings });
-  const selectedChars = () => state.sel.map(s => { const ch = byId(s.id); return ch ? { ...ch, qty: s.qty } : null; }).filter(Boolean);
+  const selectedChars = () => state.sel.map(s => { const ch = byId(s.id); return ch && !oculto(ch) ? { ...ch, qty: s.qty } : null; }).filter(Boolean);
   function schedulePreview() { cancelAnimationFrame(prevTimer); prevTimer = requestAnimationFrame(renderPreview); }
   function renderPreview() {
     const chars = selectedChars(), cv = $("#previa");
@@ -230,7 +272,7 @@
       const slug = norm(base).replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "olhinhos";
       doc.save(`olhinhos_${slug}.pdf`.replace("olhinhos_olhinhos", "olhinhos"));
     } catch (e) { console.error(e); avisar("Não deu para gerar o PDF", "Tente de novo. Se continuar, recarregue a página."); }
-    finally { btn.textContent = old; btn.disabled = !state.sel.length; }
+    finally { btn.textContent = old; btn.disabled = !selectedChars().length; }
   }
 
   // ---------- editor ----------
@@ -296,16 +338,21 @@
   }
   const temFaixaTopo = () => draft.colors.length >= 3 && draft.colors[0].toUpperCase() === draft.colors[1].toUpperCase() && draft.stops[0] === 0 && draft.stops[1] <= 15;
   const diferentes = () => Array.isArray(draft.colors2) || draft.camadas.some(l => l.lado);
-  function openEditor(ch) {
-    editing = ch && ch._id.startsWith("meu:") ? ch._id : null;
-    draft = ch ? clone({ ...ch, _id: undefined, _v: undefined, _metades: undefined, proc: undefined }) : defaultDraft();
+  // openEditor(ch): edita o próprio personagem (meu ou da biblioteca); openEditor(ch, true): cria uma cópia em "Meus personagens"
+  function openEditor(ch, copia = false) {
+    editing = ch && !copia ? ch._id : null;
+    const daLib = !!editing && editing.startsWith("lib:");
+    draft = ch ? clone({ ...ch, _id: undefined, _v: undefined, _metades: undefined, _editado: undefined, proc: undefined }) : defaultDraft();
+    // na biblioteca o tema fica fixo (é ele que diz em que aba o personagem mora)
+    $("#ed-tema").disabled = daLib; $("#temas").hidden = daLib;
+    $("#ed-restaurar").hidden = !(daLib && state.editados[editing]);
     draft.fx = draft.fx || {}; draft.camadas = Array.isArray(draft.camadas) ? draft.camadas : [];
     // cores "ligadas": seguem o degradê até a pessoa mudar manualmente
     const last = draft.colors.length - 1, mid = Math.floor(draft.colors.length / 2);
     link = { top: !!draft.fx.top && draft.fx.top.color === draft.colors[0],
       cres: !!draft.fx.cres && draft.fx.cres.color === draft.colors[last],
       band: !ch || draft.band === draft.colors[mid] };
-    $("#ed-titulo").textContent = editing ? `Editar ${ch.name}` : ch ? `Nova versão de ${ch.name}` : "Novo personagem";
+    $("#ed-titulo").textContent = editing ? `Editar ${ch.name}` : ch ? `Cópia de ${ch.name}` : "Novo personagem";
     $("#ed-salvar").textContent = editing ? "Salvar alterações" : "Salvar em meus personagens";
     $("#ed-nome").value = draft.name; $("#ed-tema").value = draft.theme || ""; fillThemes();
     $("#ed-faixa-cor").value = draft.band.split("|")[0].toLowerCase();
@@ -508,14 +555,18 @@
   function saveEditor() {
     const name = $("#ed-nome").value.trim().toUpperCase();
     if (!name) { $("#ed-erro").textContent = "Dê um nome ao personagem."; $("#ed-nome").focus(); return; }
-    draft.name = name; draft.theme = $("#ed-tema").value.trim() || "Meus personagens";
+    draft.name = name;
+    if (!(editing && editing.startsWith("lib:"))) draft.theme = $("#ed-tema").value.trim() || "Meus personagens";
     draft.qty = Number((document.querySelector('input[name="ed-qty"]:checked') || {}).value || 1);
     const tom = Number((document.querySelector('input[name="ed-tom"]:checked') || {}).value || 1);
     if (tom < 1) draft.tom = .5; else delete draft.tom;
     if ($("#ed-espelhar").checked) delete draft.espelhar; else draft.espelhar = false;
     if (!validChar(draft)) { $("#ed-erro").textContent = "Confira as cores: use códigos como #A1B2C3 e posições entre 0 e 100."; return; }
     const final = clone(draft); if (!final.camadas.length) delete final.camadas;
-    if (editing) {
+    if (editing && editing.startsWith("lib:")) {
+      final.theme = ORIGINAL.get(editing).theme;
+      state.editados[editing] = final; aplicarEdicao(editing);
+    } else if (editing) {
       const i = state.custom.findIndex(c => c._id === editing);
       const prevV = state.custom[i]._v || 0;
       state.custom[i] = { ...final, _id: editing, _v: prevV + 1 };
@@ -525,6 +576,14 @@
       state.sel.push({ id, qty: final.qty });
     }
     save(); dlg.close(); renderList(); renderSelected(); schedulePreview(); fillThemes();
+  }
+  // volta um personagem da biblioteca ao original
+  async function restaurar(id) {
+    const ch = byId(id);
+    if (!await caixa({ titulo: `Restaurar ${ORIGINAL.get(id).name}?`, texto: "As suas alterações neste personagem serão apagadas e ele volta a ser como veio na biblioteca.", ok: "Restaurar", cancelar: "Cancelar" })) return false;
+    delete state.editados[id]; aplicarEdicao(id);
+    save(); renderList(); renderSelected(); schedulePreview();
+    return !!ch;
   }
   // sugestões de tema em pílulas (no lugar do <datalist>, que não aceita estilo)
   function fillThemes() {
@@ -589,9 +648,11 @@
     $("#por-tema").checked = state.settings.byTheme;
     $("#por-tema").addEventListener("change", e => { state.settings.byTheme = e.target.checked; save(); pageIdx = 0; schedulePreview(); });
     $("#alfabetica").checked = state.settings.alphabetical;
-    $("#alfabetica").addEventListener("change", e => { state.settings.alphabetical = e.target.checked; save(); schedulePreview(); });    $("#btn-exportar").addEventListener("click", exportCustom);
+    $("#alfabetica").addEventListener("change", e => { state.settings.alphabetical = e.target.checked; save(); schedulePreview(); });
+    $("#btn-exportar").addEventListener("click", exportCustom);
     $("#importar").addEventListener("change", e => { if (e.target.files[0]) importCustom(e.target.files[0]); e.target.value = ""; });
     $("#ed-salvar").addEventListener("click", saveEditor);
+    $("#ed-restaurar").addEventListener("click", async () => { if (editing && await restaurar(editing)) dlg.close(); });
     $("#ed-nome").addEventListener("input", updateEditorPreview);
     $("#ed-tema").addEventListener("input", fillThemes);
     $("#ed-add").addEventListener("click", () => {
@@ -616,6 +677,6 @@
   (async function init() {
     await loadFonts();
     try { O.drawPreview._logo = await O.logoCanvas(); O.drawPreview._selo = await O.seloCanvas(); } catch (e) { }
-    bind(); fillThemes(); renderList(); renderSelected(); renderPreview();
+    bind(); fillThemes(); renderVisiveis(); renderList(); renderSelected(); renderPreview();
   })();
 })();
